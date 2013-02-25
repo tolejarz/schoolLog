@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title><?php echo $conf['site']['name']; ?></title>
+        <link rel="stylesheet" type="text/css" href="templates/style.css" />
+        <link rel="stylesheet" type="text/css" href="lib/_js/theme_jquery_ui/jquery-ui-1.7.1.custom.css" />
+        <script type="text/javascript" src="lib/_js/jquery-1.3.2.min.js"></script>
+        <script type="text/javascript" src="lib/_js/ui.datepicker-fr.js"></script>
+        <script type="text/javascript" src="lib/_js/jquery-ui-1.7.1.custom.min.js"></script>
+        <script type="text/javascript" src="lib/_js/global.js"></script>
+        <script type="text/javascript" src="lib/_js/progress.js"></script>
+        <link href="favicon.ico" rel="icon" type="image/x-icon" />
+    </head>
+    <body>
+        <div id="globalContainer">
+            <div id="logContainer">
+                Bienvenue <span class="log"><?php echo(($_SESSION['user_privileges'] == 'eleve' ? $_SESSION['user_surname'] : $_SESSION['user_civility']) . ' ' . $_SESSION['user_name']); ?></span> (<a href="?action=deconnexion" target="_self">Déconnexion</a>)<br />
+                <?php if (!empty($_SESSION['user_lastlog'])) : ?>Dernière connexion <span class="log"><?php echo $_SESSION['user_lastlog']; endif; ?></span>
+            </div>
+            <div id="headerContainer"><h1><?php echo $conf['site']['name']; ?> <span class="version">2.0 WIP | </span><span class="by">by JeeTee 2013</span></h1></div>
+            <div id="menuContainer">
+                <ul class="menusList">
+                    <!-- menu Emploi du temps -->
+                    <?php if ($_SESSION['user_privileges'] != 'administrateur') : ?>
+                        <li>Emploi du temps
+                            <ul class="subMenusList">
+                            <?php if ($_SESSION['user_privileges'] == 'eleve') : ?>
+                                <li><a href="?page=emploi_du_temps" target="_self">Consulter</a></li>
+                            <?php elseif ($_SESSION['user_privileges'] == 'enseignant') : ?>
+                                <li><a href="?page=emploi_du_temps" target="_self">Votre emploi du temps</a></li>
+                                <li><a href="?page=emploi_du_temps&action=voir_classes" target="_self">Classes</a></li>
+                                <li><a href="?page=emploi_du_temps&action=demande" target="_self">Demandes de report</a></li>
+                            <?php elseif ($_SESSION['user_privileges'] == 'superviseur') : ?>
+                                <li><a href="?page=emploi_du_temps&action=voir_enseignants" target="_self">Enseignants</a></li>
+                                <li><a href="?page=emploi_du_temps&action=voir_classes" target="_self">Classes</a></li>
+                                <li><a href="?page=emploi_du_temps&action=demande" target="_self">Demandes de modification</a></li>
+                                <li><a href="?page=emploi_du_temps&action=show_periods" target="_self">Gestion emplois du temps</a></li>
+                            <?php endif; ?>
+                            </ul>
+                        </li>
+                    <?php endif; ?>
+                    
+                    <!-- menu Matériels -->
+                    <?php if (in_array($_SESSION['user_privileges'], array('superviseur', 'enseignant'))) : ?>
+                        <li>Matériels<ul class="subMenusList">
+                            <li><a href="?page=materiels" target="_self">Liste du matériel</a></li>
+                            <li><a href="?page=reservations" target="_self">Consulter les réservations</a></li>
+                        </ul></li>
+                    <?php endif; ?>
+                    
+                    <!-- menu Supports de cours -->
+                    <?php if ($_SESSION['user_privileges'] != 'administrateur') : ?>
+                        <li>Supports de cours
+                            <ul class="subMenusList">
+                            <?php if ($_SESSION['user_privileges'] == 'eleve') : ?>
+                                <li><a href="?page=supports" target="_self">Rechercher</a></li>
+                            <?php elseif ($_SESSION['user_privileges'] == 'enseignant' || $_SESSION['user_privileges'] == 'superviseur') : ?>
+                                <li><a href="?page=supports" target="_self">Ajouter/Consulter</a></li>
+                            <?php endif; ?>
+                            </ul>
+                        </li>
+                    <?php endif; ?>
+                    
+                    <!-- Menu Administration -->
+                    <?php if (in_array($_SESSION['user_privileges'], array('superviseur', 'administrateur'))) : ?>
+                        <li>Administration
+                            <ul class="subMenusList">
+                            <?php if ($_SESSION['user_privileges'] == 'superviseur') : ?>
+                                <li><a href="?page=classes" target="_self">Liste des classes</a></li>
+                                <li><a href="?page=utilisateurs" target="_self">Liste des enseignants</a></li>
+                                <li><a href="?page=matieres" target="_self">Liste des matières</a></li>
+                            <?php elseif ($_SESSION['user_privileges'] == 'administrateur') : ?>
+                                <li><a href="?page=utilisateurs" target="_self">Liste des enseignants</a></li>
+                                <li><a href="?page=sauvegardes" target="_self">Sauvegardes bdd</a></li>
+                            <?php endif; ?>
+                            </ul>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </div>
+            <div id="mainContainer">
+                <?php if (isset($_SESSION['ERROR_MSG'])) : ?>
+                    <div class="errorContainer"><b>Erreur :</b> <?php echo $_SESSION['ERROR_MSG']; ?></div>
+                    <?php unset($_SESSION['ERROR_MSG']); ?>
+                <?php elseif (isset($_SESSION['INFO_MSG'])) : ?>
+                    <div class="infoContainer"><b>Information :</b> <?php echo $_SESSION['INFO_MSG']; ?></div>
+                    <?php unset($_SESSION['INFO_MSG']); ?>
+                <?php endif; ?>
+                
+                <?php echo $html; ?>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </body>
+</html>

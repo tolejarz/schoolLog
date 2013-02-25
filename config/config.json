@@ -1,0 +1,26 @@
+{
+    "database":{
+        "schoollog":{
+            "host":"localhost",
+            "username":"root",
+            "password":"root",
+            "database":"schoollog"
+        }
+    },
+    "path":{
+        "upload":"upload/",
+        "save_sql":"save_sql/"
+    },
+    "misc":{
+        "subject_width":126,
+        "part_height":21
+    },
+    "ldap":{
+        "server":""
+    },
+    "site":{
+        "name":"schoolLog",
+        "address":"http://localhost",
+        "dir":"/schoolLog/"
+    }
+}
