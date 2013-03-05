@@ -2,7 +2,7 @@
 $sauvegardes = $parms['sauvegardes'];
 echo('
 	<h2>Liste des sauvegardes</h2>
-	<a class="addLink" href="?page=sauvegardes&amp;action=add" target="_self">Sauvegarder la base</a>
+	<a class="addLink" href="' . Router::build('BackupAdd') . '" target="_self">Sauvegarder la base</a>
 	<p class="separator2"></p>');
 if (!empty($sauvegardes)) {
 	echo('
@@ -15,9 +15,9 @@ if (!empty($sauvegardes)) {
 			</tr>');
 	foreach ($sauvegardes as $sauvegarde) {
 		echo('
-			<tr><td class="centered"><a href="?page=sauvegardes&amp;action=delete&fichier=' . $sauvegarde['fichier'] . '" target="_self"><img alt="Supprimer" src="templates/img/delete.png" title="Supprimer" /></a></td>
+			<tr><td class="centered"><a href="' . Router::build('BackupDelete', array('filename' => $sauvegarde['fichier'])) . '" target="_self"><img alt="Supprimer" src="templates/img/delete.png" title="Supprimer" /></a></td>
 				<td class="centered">' . $sauvegarde['date'] . '</td><td class="centered">' . $sauvegarde['heure'] . '</td>
-				<td class="centered"><a href="?page=sauvegardes&amp;action=restore&fichier=' . $sauvegarde['fichier'] . '" target="_self"><img alt="Restaurer" src="templates/img/dbrestore.png" title="Restaurer" /></a></td>
+				<td class="centered"><a href="' . Router::build('BackupRestore', array('filename' => $sauvegarde['fichier'])) . '" target="_self"><img alt="Restaurer" src="templates/img/dbrestore.png" title="Restaurer" /></a></td>
 			</tr>');
 	}
 	echo('</table>');

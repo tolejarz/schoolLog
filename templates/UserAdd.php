@@ -1,7 +1,7 @@
 <?php
 echo('
 	<div class="selectionBox">
-		<form action="index.php?page=utilisateurs&amp;action=add" method="post">
+		<form action="" method="post">
 			<p class="headerSelectionBox">Veuillez saisir les informations relatives à l\'enseignant.</p>
 			<table class="searchContainer">
 				<tr>

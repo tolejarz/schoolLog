@@ -2,14 +2,13 @@
 class ReservationController extends Controller {
 	
 	/* Fonction pour afficher la liste des réservations d'une semaine*/
-	function _doDefaultAction() {
+	function doList() {
 		if ($_SESSION['user_privileges'] == 'superviseur' || $_SESSION['user_privileges'] == 'enseignant') {
 			$week = $this->_getArg('week');
 			$week = !empty($week) ? $week : (date('w') % 5 == 0 ? date('W') + 1: date('W'));
 			$arg = '&amp;id_materiel=' . $this->_getArg('id_materiel');
 			
 			/* Récupération de la liste du materiel dans la base */
-			import('MaterielModel');
 			$m = new MaterielModel($this->dbo);
 			$materiels = $m->listing();
 			
@@ -21,7 +20,6 @@ class ReservationController extends Controller {
 				}
 			}
 			
-			import('ReservationModel');
 			/* Récupération des informations relatives aux réservations de la semaine $week dans la base */
 			$m = new ReservationModel($this->dbo);
 			$r = $m->get(array('id_materiel' => $id_materiel, 'week' => $week));
@@ -29,7 +27,6 @@ class ReservationController extends Controller {
 			$r['_arg'] = $arg;
 			$r['_week'] = $week;
 			
-			import('ReservationDefaultView');
 			$v = new ReservationDefaultView();
 			$v->show($r, $materiels);
 		}
@@ -38,7 +35,6 @@ class ReservationController extends Controller {
 	/* Fonction pour supprimer une réservation */
 	function _doDelete() {
 		if ($_SESSION['user_privileges'] == 'superviseur' || $_SESSION['user_privileges'] == 'enseignant') {
-			import('ReservationModel');
 			$m = new ReservationModel($this->dbo);
 			if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				if (isset($_POST['validation'])) {
@@ -47,10 +43,8 @@ class ReservationController extends Controller {
 						$infos = $this->dbo->singleQuery('select date_heure_debut, date_heure_fin, m.type as type, m.modele as modele, u.email as email, concat(u.civility, " ", u.nom) as enseignant from materiels m, reservations r, utilisateurs u where r.id=' . $this->_getArg('id') . ' and r.id_materiel=m.id and r.id_enseignant=u.id');
 						$parms = array('date_heure_debut' => $infos['date_heure_debut'], 'date_heure_fin' => $infos['date_heure_fin'], 'enseignant' =>$infos['enseignant'], 'type'=> $infos['type'], 'modele'=> $infos['modele']);
 						
-						import('ReservationEmailView');
 						$v = new ReservationEmailView();
 						
-						import('Mail');
 						$mm = new Mail();
 						$mm->SendMail($_SESSION['user_email'], $infos['email'], 'materiel_delete', $v->show($parms));
 					}
@@ -61,7 +55,6 @@ class ReservationController extends Controller {
 			}
 			/* Récupération des informations associées à la réservation dans la base */
 			$r = $m->getReservation(array('id' => $this->_getArg('id')));
-			import('ReservationDeleteView');
 			$params = array(
 				'id' 					=> $this->_getArg('id'),
 				'date_reservation'		=> $r['date_reservation'],
@@ -116,7 +109,6 @@ class ReservationController extends Controller {
 					}
 					$_SESSION['ERROR_MSG'] = 'Ce matériel est déjà réservé pour le créneau choisi' . $autre_proposition;
 				} else {
-					import('ReservationModel');
 					$parms = array(
 						'date_heure_debut' 		=> $date_debut,
 						'date_heure_fin' 		=> $date_fin,
@@ -139,10 +131,8 @@ class ReservationController extends Controller {
 						}
 						$emails = implode(';', $emails);
 						
-						import('ReservationEmailView');
 						$v = new ReservationEmailView();
 						
-						import('Mail');
 						$m = new Mail();
 						$m->SendMail($_SESSION['user_email'], $emails, 'materiel_new_prof', $v->show($parms));
 					} else if (!empty($id) && $_SESSION['user_privileges'] == 'superviseur') {
@@ -150,10 +140,8 @@ class ReservationController extends Controller {
 						$infos = $this->dbo->singleQuery('select m.type as type, m.modele as modele, u.email as email, concat(u.civility, " ", u.nom) as enseignant from materiels m, reservations r, utilisateurs u where m.id=' . $parms['id_materiel'] . ' and r.id_materiel=m.id and r.id_enseignant=u.id');
 						
 						$parms = array('date_heure_debut' => $parms['date_heure_debut'], 'date_heure_fin' => $parms['date_heure_fin'], 'enseignant' =>$infos['enseignant'], 'type'=> $infos['type'], 'modele'=> $infos['modele']);
-						import('ReservationEmailView');
 						$v = new ReservationEmailView();
 						
-						import('Mail');
 						$m = new Mail();
 						$m->SendMail($_SESSION['user_email'], $infos['email'], 'materiel_new_superviseur', $v->show($parms));
 					}
@@ -162,16 +150,13 @@ class ReservationController extends Controller {
 			}
 			
 			/* Récupération de la liste du matériel dans la base */
-			import('MaterielModel');
 			$m = new MaterielModel($this->dbo);
 			$materiels = $m->listingFonctionnels();
 			
 			/* Récupération de la liste des enseignants dans la base */
-			import('UserModel');
 			$m = new UserModel($this->dbo);
 			$enseignants = $m->listingEnseignants();
 			
-			import('ReservationAddView');
 			$params = array(
 				'materiels' 		=> $materiels,
 				'enseignants' 		=> $enseignants,
@@ -190,14 +175,11 @@ class ReservationController extends Controller {
 			$infos = $this->dbo->singleQuery('select date_heure_debut, date_heure_fin, m.type as type, m.modele as modele, u.email as email, concat(u.civility, " ", u.nom) as enseignant from materiels m, reservations r, utilisateurs u where r.id=' . $this->_getArg('id') . ' and r.id_materiel=m.id and r.id_enseignant=u.id');
 			$parms = array('date_heure_debut' => $infos['date_heure_debut'], 'date_heure_fin' => $infos['date_heure_fin'], 'enseignant' =>$infos['enseignant'], 'type'=> $infos['type'], 'modele'=> $infos['modele']);
 			
-			import('ReservationEmailView');
 			$v = new ReservationEmailView();
 			
-			import('Mail');
 			$m = new Mail();
 			$m->SendMail($_SESSION['user_email'], $infos['email'], 'materiel_reject', $v->show($parms));
 			/* Suppression de la réservation dans la base */
-			import('ReservationModel');
 			$m = new ReservationModel($this->dbo);
 			$m->delete($this->_getArg('id'));
 			die();
@@ -211,14 +193,11 @@ class ReservationController extends Controller {
 			$infos = $this->dbo->singleQuery('select date_heure_debut, date_heure_fin, m.type as type, m.modele as modele, u.email as email, concat(u.civility, " ", u.nom) as enseignant from materiels m, reservations r, utilisateurs u where r.id=' . $this->_getArg('id') . ' and r.id_materiel=m.id and r.id_enseignant=u.id');
 			$parms = array('date_heure_debut' => $infos['date_heure_debut'], 'date_heure_fin' => $infos['date_heure_fin'], 'enseignant' =>$infos['enseignant'], 'type'=> $infos['type'], 'modele'=> $infos['modele']);
 			
-			import('ReservationEmailView');
 			$v = new ReservationEmailView();
 			
-			import('Mail');
 			$m = new Mail();
 			$m->SendMail($_SESSION['user_email'], $infos['email'], 'materiel_accept', $v->show($parms));
 			/* Changer l'etat de la réservation dans la base */
-			import('ReservationModel');
 			$m = new ReservationModel($this->dbo);
 			$m->update($this->_getArg('id'), array('etat' => 'validée'));
 			die();

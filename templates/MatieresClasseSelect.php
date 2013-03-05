@@ -1,7 +1,7 @@
 <?php
 echo('
 	<div class="selectionBox">
-		<form action="index.php?page=matieresClasse" method="post">
+		<form action="" method="post">
 			<p class="headerSelectionBox">
 				Veuillez choisir la classe dont vous voulez afficher les matières :
 				<select name="id_classe">');

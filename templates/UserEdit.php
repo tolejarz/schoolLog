@@ -1,7 +1,7 @@
 <?php
 echo('
 	<div class="selectionBox">
-		<form action="index.php?page=utilisateurs&amp;action=edit&amp;id=' . $parms['id'] . '" method="post">
+		<form action="" method="post">
 			<p class="headerSelectionBox">Veuillez modifier les informations relatives à l\'utilisateur.</p>
 			<table class="searchContainer">
 				<tr>

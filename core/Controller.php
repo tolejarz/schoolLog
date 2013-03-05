@@ -9,7 +9,9 @@ abstract class Controller {
 		$this->dbo = $dbo;
 	}
 	
-	abstract function _doDefaultAction();
+	protected function _doDefaultAction() {
+		
+	}
 	
 	function _getArg($i) {
 		return isset($_POST[$i]) ? $_POST[$i] : (isset($_GET[$i]) ? $_GET[$i] : null);
@@ -68,23 +70,6 @@ abstract class Controller {
 			list($h, $i, $s) = explode(':', $c[1]);
 		}
 		return mktime(intval($h), intval($i), intval($s), intval($cd[1]), intval($cd[2]), intval($cd[0]));
-	}
-	
-	function redirect($route, $parms = array()) {
-		// TODO: improve file caching!
-		$uri = file_get_contents('config/uri.json');
-        $uri = json_decode($uri, true);
-        
-        if (!array_key_exists($route, $uri)) die();
-        
-        if (!empty($parms)) {
-        	$new_uri = vsprintf($uri[$route]['reverse_uri'], array_values($parms));
-        } else {
-        	$new_uri = $uri[$route]['uri'];
-        }
-        
-		header('Location: ' . $new_uri);
-		die();
 	}
 }
 ?>

@@ -3,19 +3,19 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title><?php echo $conf['site']['name']; ?></title>
-        <link rel="stylesheet" type="text/css" href="templates/style.css" />
-        <link rel="stylesheet" type="text/css" href="lib/_js/theme_jquery_ui/jquery-ui-1.7.1.custom.css" />
-        <script type="text/javascript" src="lib/_js/jquery-1.3.2.min.js"></script>
-        <script type="text/javascript" src="lib/_js/ui.datepicker-fr.js"></script>
-        <script type="text/javascript" src="lib/_js/jquery-ui-1.7.1.custom.min.js"></script>
-        <script type="text/javascript" src="lib/_js/global.js"></script>
-        <script type="text/javascript" src="lib/_js/progress.js"></script>
+        <link rel="stylesheet" type="text/css" href="/resource/style.css" />
+        <!--<link rel="stylesheet" type="text/css" href="/resource/jquery-ui-1.7.1.custom.css" />-->
+        <script type="text/javascript" src="/resource/jquery-1.3.2.min.js"></script>
+        <script type="text/javascript" src="/resource/ui.datepicker-fr.js"></script>
+        <script type="text/javascript" src="/resource/jquery-ui-1.7.1.custom.min.js"></script>
+        <script type="text/javascript" src="/resource/global.js"></script>
+        <script type="text/javascript" src="/resource/progress.js"></script>
         <link href="favicon.ico" rel="icon" type="image/x-icon" />
     </head>
     <body>
         <div id="globalContainer">
             <div id="logContainer">
-                Bienvenue <span class="log"><?php echo(($_SESSION['user_privileges'] == 'eleve' ? $_SESSION['user_surname'] : $_SESSION['user_civility']) . ' ' . $_SESSION['user_name']); ?></span> (<a href="?action=deconnexion" target="_self">Déconnexion</a>)<br />
+                Bienvenue <span class="log"><?php echo(($_SESSION['user_privileges'] == 'eleve' ? $_SESSION['user_surname'] : $_SESSION['user_civility']) . ' ' . $_SESSION['user_name']); ?></span> (<a href="<?php echo Router::build('UserLogout'); ?>" target="_self">Déconnexion</a>)<br />
                 <?php if (!empty($_SESSION['user_lastlog'])) : ?>Dernière connexion <span class="log"><?php echo $_SESSION['user_lastlog']; endif; ?></span>
             </div>
             <div id="headerContainer"><h1><?php echo $conf['site']['name']; ?> <span class="version">2.0 WIP | </span><span class="by">by JeeTee 2013</span></h1></div>
@@ -26,16 +26,16 @@
                         <li>Emploi du temps
                             <ul class="subMenusList">
                             <?php if ($_SESSION['user_privileges'] == 'eleve') : ?>
-                                <li><a href="?page=emploi_du_temps" target="_self">Consulter</a></li>
+                                <li><a href="<?php echo Router::build('Calendar'); ?>" target="_self">Consulter</a></li>
                             <?php elseif ($_SESSION['user_privileges'] == 'enseignant') : ?>
-                                <li><a href="?page=emploi_du_temps" target="_self">Votre emploi du temps</a></li>
-                                <li><a href="?page=emploi_du_temps&action=voir_classes" target="_self">Classes</a></li>
-                                <li><a href="?page=emploi_du_temps&action=demande" target="_self">Demandes de report</a></li>
+                                <li><a href="<?php echo Router::build('Calendar'); ?>" target="_self">Votre emploi du temps</a></li>
+                                <li><a href="<?php echo Router::build('CalendarClass'); ?>" target="_self">Classes</a></li>
+                                <li><a href="<?php echo Router::build('CalendarRequestList'); ?>" target="_self">Demandes de report</a></li>
                             <?php elseif ($_SESSION['user_privileges'] == 'superviseur') : ?>
-                                <li><a href="?page=emploi_du_temps&action=voir_enseignants" target="_self">Enseignants</a></li>
-                                <li><a href="?page=emploi_du_temps&action=voir_classes" target="_self">Classes</a></li>
-                                <li><a href="?page=emploi_du_temps&action=demande" target="_self">Demandes de modification</a></li>
-                                <li><a href="?page=emploi_du_temps&action=show_periods" target="_self">Gestion emplois du temps</a></li>
+                                <li><a href="<?php echo Router::build('CalendarTeacher'); ?>" target="_self">Enseignants</a></li>
+                                <li><a href="<?php echo Router::build('CalendarClass'); ?>" target="_self">Classes</a></li>
+                                <li><a href="<?php echo Router::build('CalendarRequestList'); ?>" target="_self">Demandes de modification</a></li>
+                                <li><a href="<?php echo Router::build('CalendarPeriodList'); ?>" target="_self">Gestion emplois du temps</a></li>
                             <?php endif; ?>
                             </ul>
                         </li>
@@ -44,8 +44,8 @@
                     <!-- menu Matériels -->
                     <?php if (in_array($_SESSION['user_privileges'], array('superviseur', 'enseignant'))) : ?>
                         <li>Matériels<ul class="subMenusList">
-                            <li><a href="?page=materiels" target="_self">Liste du matériel</a></li>
-                            <li><a href="?page=reservations" target="_self">Consulter les réservations</a></li>
+                            <li><a href="<?php echo Router::build('EquipmentList'); ?>" target="_self">Liste du matériel</a></li>
+                            <li><a href="<?php echo Router::build('BookingList'); ?>" target="_self">Consulter les réservations</a></li>
                         </ul></li>
                     <?php endif; ?>
                     
@@ -54,9 +54,9 @@
                         <li>Supports de cours
                             <ul class="subMenusList">
                             <?php if ($_SESSION['user_privileges'] == 'eleve') : ?>
-                                <li><a href="?page=supports" target="_self">Rechercher</a></li>
+                                <li><a href="<?php echo Router::build('SupportList'); ?>" target="_self">Rechercher</a></li>
                             <?php elseif ($_SESSION['user_privileges'] == 'enseignant' || $_SESSION['user_privileges'] == 'superviseur') : ?>
-                                <li><a href="?page=supports" target="_self">Ajouter/Consulter</a></li>
+                                <li><a href="<?php echo Router::build('SupportList'); ?>" target="_self">Ajouter/Consulter</a></li>
                             <?php endif; ?>
                             </ul>
                         </li>
@@ -67,12 +67,12 @@
                         <li>Administration
                             <ul class="subMenusList">
                             <?php if ($_SESSION['user_privileges'] == 'superviseur') : ?>
-                                <li><a href="?page=classes" target="_self">Liste des classes</a></li>
-                                <li><a href="?page=utilisateurs" target="_self">Liste des enseignants</a></li>
-                                <li><a href="?page=matieres" target="_self">Liste des matières</a></li>
+                                <li><a href="<?php echo Router::build('ClassList'); ?>" target="_self">Liste des classes</a></li>
+                                <li><a href="<?php echo Router::build('UserList'); ?>" target="_self">Liste des enseignants</a></li>
+                                <li><a href="<?php echo Router::build('SubjectList'); ?>" target="_self">Liste des matières</a></li>
                             <?php elseif ($_SESSION['user_privileges'] == 'administrateur') : ?>
-                                <li><a href="?page=utilisateurs" target="_self">Liste des enseignants</a></li>
-                                <li><a href="?page=sauvegardes" target="_self">Sauvegardes bdd</a></li>
+                                <li><a href="<?php echo Router::build('UserList'); ?>" target="_self">Liste des enseignants</a></li>
+                                <li><a href="<?php echo Router::build('BackupList'); ?>" target="_self">Sauvegardes bdd</a></li>
                             <?php endif; ?>
                             </ul>
                         </li>

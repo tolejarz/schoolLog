@@ -3,12 +3,12 @@ $css = array('' => '', 'en attente' => 'pending', 'validée' => 'accepted', 'ref
 echo('
 	<h2><p class="calendarTitle">'. ucfirst(getFrMonth($parms['month'])) . ' ' . $parms['year'] . '</p>Historique des demandes de report</h2>
 	<p class="floatLeft">
-		<a class="monthLink" href="?page=emploi_du_temps&action=history&month=' . $parms['prevMonth'] . '&year=' . $parms['prevYear'] . '" target="_self">< ' .  ucfirst(getFrMonth($parms['prevMonth'])) . ' ' . $parms['prevYear'] . '</a>
+		<a class="monthLink" href="' . Router::build('CalendarRequestHistory', NULL, array('month' => $parms['prevMonth'], 'year' => $parms['prevYear'])) . '" target="_self">< ' .  ucfirst(getFrMonth($parms['prevMonth'])) . ' ' . $parms['prevYear'] . '</a>
 	</p>');
 if ($parms['nextYear'] . $parms['nextMonth'] <= date('Ym')) {
 	echo('
 		<p class="floatRight">
-			<a class="monthLink" href="?page=emploi_du_temps&action=history&month=' . $parms['nextMonth'] . '&year=' . $parms['nextYear'] . '" target="_self">' .  ucfirst(getFrMonth($parms['nextMonth'])) . ' ' . $parms['nextYear'] . ' ></a>
+			<a class="monthLink" href="' . Router::build('CalendarRequestHistory', NULL, array('month' => $parms['nextMonth'], 'year' => $parms['nextYear'])) . '" target="_self">' .  ucfirst(getFrMonth($parms['nextMonth'])) . ' ' . $parms['nextYear'] . ' ></a>
 		</p>');
 }
 	echo('<p class="separator2"></p>');

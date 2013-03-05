@@ -1,7 +1,7 @@
 <?php
 echo('
 	<div class="selectionBox">
-		<form action="index.php?page=matieresClasse&amp;action=add&id_classe=' . $parms['id_classe'] . '" method="post">
+		<form action="" method="post">
 		<p class="headerSelectionBox">Veuillez choisir la matière à ajouter à la classe <b>' . $parms['classe'] . '</b>.</p>
 		<table class="searchContainer">
 			<tr>

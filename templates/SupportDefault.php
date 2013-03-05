@@ -5,7 +5,7 @@ if (!empty($parms['classes'])) {
 		if (!empty($class['subjects'])) {
 			foreach ($class['subjects'] as $subject) {
 				echo(
-					(in_array($_SESSION['user_privileges'], array('enseignant', 'superviseur')) ? '<a class="addLink" href="?page=supports&action=add&class=' . $class['id'] . '&subject=' . $subject['id'] . '" target="_self">Ajouter un support</a>' : '') . '
+					(in_array($_SESSION['user_privileges'], array('enseignant', 'superviseur')) ? '<a class="addLink" href="' . Router::build('SupportAdd', NULL, array('class' => $class['id'], 'subject_id' => $subject['id'])) . '" target="_self">Ajouter un support</a>' : '') . '
 					<h3' . ($_SESSION['user_privileges'] == 'enseignant' ? ' id="' . $class['id'] . '-' . $subject['id'] . '"' : '') . '>' . $subject['nom'] . '</h3>
 					<p class="separator4"></p>');
 				if (!empty($subject['supports'])) {
@@ -21,8 +21,8 @@ if (!empty($parms['classes'])) {
 					foreach ($subject['supports'] as $support) {
 						echo('
 							<tr>' .
-								(in_array($_SESSION['user_privileges'], array('enseignant', 'superviseur')) ? '<td class="centered"><a href="?page=supports&action=delete&id=' . $support['id'] . '" target="_self"><img alt="Supprimer" src="templates/img/delete.png" title="Supprimer" /></a>' : '') .
-								($_SESSION['user_privileges'] == 'enseignant' ? ' <a href="?page=supports&action=edit&id=' . $support['id'] . '" target="_self"><img alt="Modifier" src="templates/img/edit.png" title="Modifier" /></a>' : '') .
+								(in_array($_SESSION['user_privileges'], array('enseignant', 'superviseur')) ? '<td class="centered"><a href="' . Router::build('SupportDelete', array('support_id' => $support['id'])) . '" target="_self"><img alt="Supprimer" src="templates/img/delete.png" title="Supprimer" /></a>' : '') .
+								($_SESSION['user_privileges'] == 'enseignant' ? ' <a href="' . Router::build('SupportEdit', array('support_id' => $support['id'])) . '" target="_self"><img alt="Modifier" src="templates/img/edit.png" title="Modifier" /></a>' : '') .
 								(in_array($_SESSION['user_privileges'], array('enseignant', 'superviseur')) ? '</td>' : '') . '
 								<td class="centeredThin">' . $support['date'] . '</td>' .
 								(in_array($_SESSION['user_privileges'], array('eleve', 'superviseur')) ? '<td class="centeredThin">' . $support['enseignant'] . '</td>' : '') . '

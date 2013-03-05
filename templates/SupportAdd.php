@@ -1,7 +1,7 @@
 <?php
 echo('
 <div class="selectionBox">
-	<form id="form_upload" action="index.php?page=supports&amp;action=add&amp;class=' . $parms['class'] . ($_SESSION['user_privileges'] == 'enseignant' ? '&amp;subject=' . $parms['subject'] : '') . '" enctype="multipart/form-data" method="post">
+	<form id="form_upload" action="" enctype="multipart/form-data" method="post">
 		<p class="headerSelectionBox">Veuillez saisir les informations relatives au support.</p>
 		<table class="searchContainer">');
 		if ($_SESSION['user_privileges'] == 'superviseur') {

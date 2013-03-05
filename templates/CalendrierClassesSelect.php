@@ -1,7 +1,7 @@
 <?php
 echo('
 	<div class="selectionBox">
-		<form action="index.php?page=emploi_du_temps&amp;action=voir_classes" method="post">
+		<form action="" method="post">
 			<p class="headerSelectionBoxThinner">
 				Veuillez choisir la classe dont vous voulez afficher l\'emploi du temps :
 				<select id="autosubmit_select" name="id_classe">');

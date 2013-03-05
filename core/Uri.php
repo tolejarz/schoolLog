@@ -4,7 +4,7 @@ class Uri {
     private $arguments;
     
     public function __construct() {
-        $c = file_get_contents('config/uri.json');
+        $c = file_get_contents('routes/uri.json');
         $this->uri = json_decode($c, true);
     }
     
@@ -101,6 +101,7 @@ class Uri {
         $request_method = !empty($_SERVER['REQUEST_METHOD']) ? strtolower(trim($_SERVER['REQUEST_METHOD'])) : NULL;
         
         
+//error_log('URI: ' . $url_path);
 
 require_once('lib/epsilib.php');
 require_once('config.php');
@@ -113,15 +114,17 @@ $dbo = new MySQLiDBO($conf['database']['schoollog']['host'], $conf['database']['
 
 session_start();
 
-if (!isset($_SESSION['user_id'])) {
-    $controller = new AuthController($dbo);
-    $controller->perform('login');
-    die();
-}
-if (empty($_SESSION['user_charter'])) {
-    $controller = new AuthController($dbo);
-    $controller->perform('charte');
-    die();
+if (strpos($url_path, 'resource') === false) {
+    if (!isset($_SESSION['user_id'])) {
+        $controller = new AuthController($dbo);
+        $controller->perform('login');
+        die();
+    }
+    if (empty($_SESSION['user_charter'])) {
+        $controller = new AuthController($dbo);
+        $controller->perform('charte');
+        die();
+    }
 }
 
 if(isset($_GET["numero"]))
@@ -145,13 +148,7 @@ define('CURRENT_PROMOTION', $year);
 /* récupère le numéro de la semaine du 31 août de l'annéde la promo actuelle */
 define('LAST_WEEK', date('W', mktime(12, 0, 0, 8, 31, CURRENT_PROMOTION)));
 
-if (isset($_GET['action'])) {
-    if ($_GET['action'] == 'deconnexion') {
-        session_destroy();
-        header('Location: index.php');
-        die();
-    }
-}
+
 /* ----------------------------------------------------------------------------- */
 
 $page = $action = '';
@@ -175,8 +172,7 @@ if (!empty($_GET['page'])) {
         die();
     }
 }*/
-
-ob_start();
+/*
 $pages = array(
     'classes'           => 'ClasseController',
     'emploi_du_temps'   => 'CalendrierController',
@@ -192,17 +188,18 @@ if (array_key_exists($page, $pages)) {
     $controller = new $pages[$page]($dbo);
     $controller->perform();
 }
-$html = ob_get_contents();
-ob_end_clean();
-
-include_once 'templates/layout/main.phtml';
-?>
-        <?php
-        
-        /*
+*/
         foreach ($this->uri as $action => $query_params) {
-            if (preg_match('`^' . $action . '$`', $url_path, $matches)) {
+            if (array_key_exists('uri', $query_params)
+                && strpos($query_params['uri'], '?') === false
+                && preg_match('`^' . $query_params['uri'] . '$`', $url_path, $matches)) {
                 $url_matched = true;
+                
+                $handler = explode('.', $query_params['handler']);
+                $handler_class = $handler[0];
+                $handler_method = 'do' . ucfirst($handler[1]);
+                
+                
                 $args = array();
                 array_shift($matches);
                 foreach ($query_params['args'] as $i => $arg) {
@@ -212,6 +209,14 @@ include_once 'templates/layout/main.phtml';
                         $args[$arg] = urldecode(urldecode($matches[$i]));
                     }
                 }
+                
+                $handler = new $handler_class($args, $conf, $dbo);
+ob_start();
+                $handler->$handler_method();
+$html = ob_get_contents();
+ob_end_clean();
+                
+                /*
                 $query_params['method'] = !empty($query_params['method']) ? strtolower(trim($query_params['method'])) : NULL;
                 if (!empty($request_method) &&
                     !empty($query_params['method']) &&
@@ -220,13 +225,21 @@ include_once 'templates/layout/main.phtml';
                 }
                 $query = new $query_params['class']($args);
                 $this->handleRawRequest($query);
+                */
                 break;
             }
         }
         if (!$url_matched) {
             error_log(sprintf('%s URI not matched (referer: %s)', $url_path, !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'unknown'));
         }
-        */
+        
+        
+        elseif ($handler_class !== 'ResourceHandler') {
+            include_once 'templates/layout/main.phtml';
+        } else {
+            echo $html;
+        }
+        
         return $query;
     }
 }

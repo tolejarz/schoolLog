@@ -1,7 +1,7 @@
 <?php
 echo('
 	<div class="selectionBox">
-		<form action="index.php?page=emploi_du_temps&amp;action=add_demande" method="post">
+		<form action="" method="post">
 			<p class="headerSelectionBox">Veuillez saisir les informations relatives à votre demande de report de cours.</p>
 			<table class="searchContainer">
 				<tr>

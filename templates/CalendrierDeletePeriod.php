@@ -1,5 +1,5 @@
 <div class="selectionBox">
-	<form action="index.php?page=emploi_du_temps&action=delete_period&id=<?php echo($parms['id']); ?>" method="post">
+	<form action="" method="post">
 		<p class="headerSelectionBox">Etes-vous sûr de vouloir supprimer cette période ?</p>
 			<table class="searchContainer">
 				<tr><th>Type :</th><td><?php echo($parms['type']); ?></td></tr>

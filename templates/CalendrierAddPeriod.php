@@ -1,4 +1,4 @@
-	<form action="index.php?page=emploi_du_temps&action=add_period&id_classe=<?php echo($parms['id_classe']); ?>" method="post">
+	<form action="" method="post">
 		<div class="selectionBox">
 			<p class="headerSelectionBox">Veuillez saisir les informations relatives à la période.</p>
 				<table class="searchContainer">

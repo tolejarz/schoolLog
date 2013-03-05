@@ -1,5 +1,3 @@
-<?php defined('EPSI') or die(); ?>
-
 <?php
 $week = $parms['_week'] - 1;
 

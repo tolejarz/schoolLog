@@ -1,7 +1,7 @@
 <?php
 echo('
 	<div class="selectionBox">
-		<form action="index.php?page=supports" method="post">');
+		<form action="" method="post">');
 if ($_SESSION['user_privileges'] == 'eleve') {
 	echo('
 			<p class="headerSelectionBox">Veuillez préciser votre recherche.</p>

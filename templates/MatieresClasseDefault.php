@@ -1,8 +1,7 @@
+<h2>Liste des matières de la classe <?php echo $parms['classe']; ?></h2>
+<a class="addLink" href="<?php echo Router::build('ClassSubjectAdd', array('class_id' => $parms['id_classe'])); ?>" target="_self">Ajouter une matière</a>
+<p class="separator3"></p>
 <?php
-echo('
-	<h2>Liste des matières de la classe ' . $parms['classe'] . '</h2>
-	<a class="addLink" href="?page=matieresClasse&amp;action=add&amp;id_classe=' . $parms['id_classe'] . '" target="_self">Ajouter une matière</a>
-	<p class="separator3"></p>');
 if (empty($parms['subjects'])) {
 	echo('<p class="notice">Aucune matière</p>');
 } else {
@@ -16,7 +15,9 @@ if (empty($parms['subjects'])) {
 	foreach ($parms['subjects'] as $subject) {
 		echo('
 			<tr>
-				<td class="centered"><a href="?page=matieresClasse&amp;action=delete&amp;id_classe=' . $parms['id_classe'] . '&amp;id_matiere=' . $subject['id'] . '" target="_self"><img alt="Supprimer" src="templates/img/delete.png" title="Supprimer" /></a> <a href="?page=matieresClasse&amp;action=edit&amp;id_classe=' . $parms['id_classe'] . '&amp;id_matiere=' . $subject['id'] . '" target="_self"><img alt="Modifier" src="templates/img/edit.png" title="Modifier" /></a></td>
+				<td class="centered">
+					<a href="' . Router::build('ClassSubjectDelete', array('class_id' => $parms['id_classe']), array('id_matiere' => $subject['id'])) . '" target="_self"><img alt="Supprimer" src="/resource/delete.png" title="Supprimer" /></a>
+					<a href="' . Router::build('ClassSubjectEdit', array('class_id' => $parms['id_classe']), array('id_matiere' => $subject['id'])) . '" target="_self"><img alt="Modifier" src="/resource/edit.png" title="Modifier" /></a></td>
 				<td>' . $subject['nom'] . '</td>
 				<td>');
 		if ($subject['enseignants'] == null) {

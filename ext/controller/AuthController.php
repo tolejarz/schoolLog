@@ -33,8 +33,14 @@ class AuthController extends Controller {
                     $_SESSION['user_privileges']            = $r['user_privileges'];
                     $_SESSION['user_lastlog']               = $r['user_lastlog'];
                     $_SESSION['user_charter']               = $r['user_charter'];
-                    header('Location: index.php');
-                    die();
+                    
+                    if (in_array($r['user_privileges'], array('enseignant', 'eleve'))) {
+                        Router::redirect('Calendar');
+                    } elseif ($r['user_privileges'] == 'superviseur') {
+                        Router::redirect('CalendarRequestList');
+                    } elseif ($r['user_privileges'] == 'administrateur') {
+                        Router::redirect('BackupList');
+                    }
                 }
             }
         } else {
@@ -51,6 +57,11 @@ class AuthController extends Controller {
         
         $v = new LoginView();
         $v->show(array());
+    }
+    
+    public function doLogout() {
+        session_destroy();
+        Router::redirect('Root');
     }
     
     function _doCharte() {

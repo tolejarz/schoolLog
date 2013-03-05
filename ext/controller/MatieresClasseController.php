@@ -2,10 +2,9 @@
 class MatieresClasseController extends Controller {
 	
 	/* Fonction pour afficher la liste des matières et des enseignants associés pour une classe */	
-	function _doDefaultAction() {
+	public function doList() {
 		if ($_SESSION['user_privileges'] == 'superviseur') {
 			/* Récupération de l'id et du libellé de toutes les classes dans la base */
-			import('ClasseModel');
 			$m = new ClasseModel($this->dbo);
 			$classes = $m->listing();
 			
@@ -15,7 +14,6 @@ class MatieresClasseController extends Controller {
 				$id_classe = $classes[0]['id'];
 			}
 			
-			import('MatieresClasseSelectView');
 			$v = new MatieresClasseSelectView();
 			$v->show(array('classes' => $classes, 'id_classe' => $id_classe));
 			
@@ -38,29 +36,27 @@ class MatieresClasseController extends Controller {
 			/* Récupération du libellé de la classe dans la base */
 			$classe = $this->dbo->sqleval('select libelle from classes where id=' . $id_classe);
 			
-			import('MatieresClasseDefaultView');
 			$v = new MatieresClasseDefaultView();
 			$v->show(array('subjects' => $subjects, 'id_classe' => $id_classe, 'classe' => $classe));
 		}
 	}
 	
 	/* Fonction pour supprimer une matière d'une classe (supprime également tous ses enseignants associés) */	
-	function _doDelete() {
+	public function doDelete($args) {
+		$class_id = $args['class_id'];
 		if ($_SESSION['user_privileges'] == 'superviseur') {
-			import('MatieresClasseModel');
 			$m = new MatieresClasseModel($this->dbo);
 			if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				if (isset($_POST['validation'])) {
 					/* Suppression de toutes les associations matière - classe dans la base */
-					$m->delete(array('id_classe' => $this->_getArg('id_classe'), 'id_matiere' => $this->_getArg('id_matiere')));
+					$m->delete(array('id_classe' => $class_id, 'id_matiere' => $this->_getArg('id_matiere')));
 				}
-				$this->redirect('ClassSubjectList', array('id_classe' => $this->_getArg('id_classe')));
+				Router::redirect('ClassSubjectList', array('class_id' => $class_id));
 			}
 			/* Récupération des informations associées à la matière de la classe dans la base */
-			$r = $m->get(array('id_classe' => $this->_getArg('id_classe'), 'id_matiere' => $this->_getArg('id_matiere')));
-			import('MatieresClasseDeleteView');
+			$r = $m->get(array('id_classe' => $class_id, 'id_matiere' => $this->_getArg('id_matiere')));
 			$params = array(
-				'id_classe' => $this->_getArg('id_classe'),
+				'id_classe' => $class_id,
 				'id_matiere' => $this->_getArg('id_matiere'),
 				'matiere' => $r['matiere'],
 				'classe' => $r['classe']
@@ -71,48 +67,46 @@ class MatieresClasseController extends Controller {
 	}
 	
 	/* Fonction pour ajouter une matière à une classe (choix du ou des enseignants associés (optionnel)  */	
-	function _doAdd() {
+	public function doAdd($args) {
+		$class_id = $args['class_id'];
 		if ($_SESSION['user_privileges'] == 'superviseur') {
 			/* Récupération de l'id et du nom de tous les enseignants dans la base */
-			import('UserModel');
 			$m = new UserModel($this->dbo);
 			$enseignants = $m->listingEnseignants();
 			
 			if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				if (isset($_POST['validation'])) {
-					import('MatieresClasseModel');
 					$m = new MatieresClasseModel($this->dbo);
 					$nb_add = 0;
 					/* Pour chaque enseignant coché on crée une entrée qui l'associe à la matière de la classe dans la base */
 					foreach($enseignants as $e) {
 						if(isset($_POST['e_'.$e['id']])) {
-							$m->create(array('id_enseignant' => $e['id'], 'id_classe' => $_GET['id_classe'], 'id_matiere' => $_POST['id_matiere']));
+							$m->create(array('id_enseignant' => $e['id'], 'id_classe' => $class_id, 'id_matiere' => $_POST['id_matiere']));
 							$nb_add++;
 						}
 					}
 					/* Si on a ajouté aucun enseignant dans la matière de la classe, on ajoute la matière à la classe sans enseignant dans la base */
 					if(empty($nb_add)) {
-						$m->create(array('id_classe' => $_GET['id_classe'], 'id_matiere' => $_POST['id_matiere']));
+						$m->create(array('id_classe' => $class_id, 'id_matiere' => $_POST['id_matiere']));
 					}
 				}
-				$this->redirect('ClassSubjectList', array('id_classe' => $this->_getArg('id_classe')));
+				Router::redirect('ClassSubjectList', array('class_id' => $class_id));
 			}
 			
 			/* Récupération de l'id et du nom de toutes les matières qui ne sont pas associées à la classe dans la base */
-			$resm = $this->dbo->query('select distinct m.id as id, m.nom as nom from matieres m, enseignants_matieres_classes emc where m.nom not in (select m.nom from matieres m, enseignants_matieres_classes emc where emc.id_matiere=m.id and emc.id_classe=' . $this->_getArg('id_classe') . ') order by nom asc');
+			$resm = $this->dbo->query('select distinct m.id as id, m.nom as nom from matieres m, enseignants_matieres_classes emc where m.nom not in (select m.nom from matieres m, enseignants_matieres_classes emc where emc.id_matiere=m.id and emc.id_classe=' . $class_id . ') order by nom asc');
 			$subjects = array();
 			foreach ($resm as $rm) {
 				$subjects[] = array('id' => $rm['id'], 'nom' => $rm['nom']);
 			}
 			
 			/* Récupération du libellé de la classe dans la base */
-			$classe = $this->dbo->sqleval('select libelle from classes where id=' . $this->_getArg('id_classe'));
+			$classe = $this->dbo->sqleval('select libelle from classes where id=' . $class_id);
 			
-			import('MatieresClasseAddView');
 			$params = array(
 				'subjects' => $subjects,
 				'enseignants' => $enseignants,
-				'id_classe' => $this->_getArg('id_classe'),
+				'id_classe' => $class_id,
 				'classe' => $classe
 			);
 			$v = new MatieresClasseAddView();
@@ -121,20 +115,19 @@ class MatieresClasseController extends Controller {
 	}
 	
 	/* Fonction pour éditer les enseignants associés à une matière */
-	function _doEdit() {
+	public function doEdit($args) {
+		$class_id = $args['class_id'];
 		if ($_SESSION['user_privileges'] == 'superviseur') {
 			/* Récupération des informations associées à la matière de la classe dans la base */
-			import('MatieresClasseModel');
 			$m = new MatieresClasseModel($this->dbo);
-			$r = $m->get(array('id_classe' => $this->_getArg('id_classe'), 'id_matiere' => $this->_getArg('id_matiere')));
+			$r = $m->get(array('id_classe' => $class_id, 'id_matiere' => $this->_getArg('id_matiere')));
 			
 			/* Récupération de l'id et du nom de tous les enseignants dans la base */
-			import('UserModel');
 			$m = new UserModel($this->dbo);
 			$enseignants = $m->listingEnseignants();
 			
 			/* Récupération de tous les id des enseignants associés à la matière de la classe dans la base */
-			$resem = $this->dbo->query('select id_enseignant from enseignants_matieres_classes where id_classe=' . $this->_getArg('id_classe') . ' and id_matiere='. $this->_getArg('id_matiere'));
+			$resem = $this->dbo->query('select id_enseignant from enseignants_matieres_classes where id_classe=' . $class_id . ' and id_matiere='. $this->_getArg('id_matiere'));
 			$enseignants_matiere = array();
 			foreach ($resem as $rem) {
 				$enseignants_matiere[] = $rem['id_enseignant'];
@@ -143,26 +136,25 @@ class MatieresClasseController extends Controller {
 			if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				if (isset($_POST['validation'])) {
 					$m = new MatieresClasseModel($this->dbo);
-					$m->delete(array('id_classe' => $this->_getArg('id_classe'), 'id_matiere' => $this->_getArg('id_matiere')));
+					$m->delete(array('id_classe' => $class_id, 'id_matiere' => $this->_getArg('id_matiere')));
 					
 					$hasEnseignants = false;
 					foreach ($_POST as $key => $value) {
 						if (substr($key, 0, 2) == 'e_') {
 							$hasEnseignants = true;
-							$m->create(array('id_enseignant' => substr($key, 2), 'id_classe' => $this->_getArg('id_classe'), 'id_matiere' => $this->_getArg('id_matiere')));
+							$m->create(array('id_enseignant' => substr($key, 2), 'id_classe' => $class_id, 'id_matiere' => $this->_getArg('id_matiere')));
 						}
 					}
 					if (!$hasEnseignants) {
-						$m->create(array('id_classe' => $this->_getArg('id_classe'), 'id_matiere' => $this->_getArg('id_matiere')));
+						$m->create(array('id_classe' => $class_id, 'id_matiere' => $this->_getArg('id_matiere')));
 					}
 				}
-				$this->redirect('ClassSubjectList', array('id_classe' => $this->_getArg('id_classe')));
+				Router::redirect('ClassSubjectList', array('class_id' => $class_id));
 			}
-			import('MatieresClasseEditView');
 			$params = array(
 				'enseignants' 				=> $enseignants,
 				'enseignants_matiere' 		=> $enseignants_matiere,
-				'id_classe' 				=> $this->_getArg('id_classe'),
+				'id_classe' 				=> $class_id,
 				'id_matiere' 				=> $this->_getArg('id_matiere'),
 				'classe' 					=> $r['classe'],
 				'matiere' 					=> $r['matiere']

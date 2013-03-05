@@ -3,8 +3,8 @@ $css = array('' => '', 'en attente' => 'pending', 'validée' => 'accepted', 'ref
 $demands = $parms['demandes'];
 echo('
 	<h2>Demandes de report</h2>
-	<a class="addLink" href="?page=emploi_du_temps&action=add_demande" target="_self">' . ($_SESSION['user_privileges'] == 'superviseur' ? 'Faire une modification' : 'Faire une demande') . '</a>
-	<a class="historyLink" href="?page=emploi_du_temps&amp;action=history" target="_self">Historique des demandes</a>
+	<a class="addLink" href="' . Router::build('CalendarRequestAdd') . '" target="_self">' . ($_SESSION['user_privileges'] == 'superviseur' ? 'Faire une modification' : 'Faire une demande') . '</a>
+	<a class="historyLink" href="' . Router::build('CalendarRequestHistory') . '" target="_self">Historique des demandes</a>
 	<p class="separator2"></p>');
 
 if (!empty($demands)) {
@@ -23,7 +23,11 @@ if (!empty($demands)) {
 		echo('<tr>');
 		if ($_SESSION['user_privileges'] == 'superviseur') {
 			if ($d['etat'] == 'en attente') {
-				echo('<td class="centered"><a href="?page=emploi_du_temps&action=accept_demande&id=' . $d['id'] . '" target="_self"><img alt="Accepter" src="templates/img/accept.png" title="Accepter" /></a> <a href="?page=emploi_du_temps&action=reject_demande&id=' . $d['id'] . '" target="_self"><img alt="Refuser" src="templates/img/refuse.png" title="Refuser" /></a></td>');
+				echo('
+					<td class="centered">
+						<a href="' . Router::build('CalendarRequestAccept', array('request_id' => $d['id'])) . '" target="_self"><img alt="Accepter" src="/resource/accept.png" title="Accepter" /></a>
+						<a href="' . Router::build('CalendarRequestReject', array('request_id' => $d['id'])) . '" target="_self"><img alt="Refuser" src="/resource/refuse.png" title="Refuser" /></a>
+					</td>');
 			} else {
 				echo('<td class="centered">-</td>');
 			}

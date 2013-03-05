@@ -1,7 +1,7 @@
 <?php
 echo('
 	<div class="selectionBox">
-		<form action="index.php?page=matieres&amp;action=add" method="post">
+		<form action="" method="post">
 			<p class="headerSelectionBox">Veuillez saisir les informations relatives à la matière.</p>
 			<table class="searchContainerSmall">
 				<tr>

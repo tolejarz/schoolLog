@@ -90,13 +90,18 @@ if (!function_exists('http_build_url')) {
 }
 
 function autoload($classname) {
-    if (in_array($classname, array('Action', 'Controller', 'DBO', 'MySQLiDBO', 'HtmlView', 'View', 'Formatter', 'Handler', 'Model', 'Query', 'Repository', 'RestClient', 'Service', 'Uri'))) {
+    if (in_array($classname, array('Action', 'Controller', 'DBO', 'MySQLiDBO', 'FileManipulation', 'HtmlView', 'View', 'Formatter', 'Handler', 'Model', 'Query', 'Repository', 'RestClient', 'Service', 'Uri'))) {
         $path = sprintf('core/%s.php', $classname);
         if (is_file($path)) {
             include_once $path;
         }
-    } elseif (in_array($classname, array('Configurator', 'MySQLConnector', 'HeaderUtils'))) {
+    } elseif (in_array($classname, array('Configurator', 'MySQLConnector', 'HeaderUtils', 'Router'))) {
         $path = sprintf('lib/%s.php', $classname);
+        if (is_file($path)) {
+            include_once $path;
+        }
+    } elseif (in_array($classname, array('Mail'))) {
+        $path = sprintf('mail/%s.php', $classname);
         if (is_file($path)) {
             include_once $path;
         }
@@ -111,7 +116,7 @@ function autoload($classname) {
     } elseif (substr($classname, -10) == 'Repository') {
         include_once sprintf('domain/model/repository/%s.php', $classname);
     } elseif (substr($classname, -7) == 'Handler') {
-        include_once sprintf('action/handler/%s.php', $classname);
+        include_once sprintf('handler/%s.php', $classname);
     } elseif(substr($classname, -6) == 'Script') {
         include_once sprintf('scripts/%s.php', $classname);
     } else {

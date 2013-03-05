@@ -1,7 +1,7 @@
 <?php
 echo('
 	<div class="selectionBox">
-		<form action="index.php?page=emploi_du_temps&amp;action=rejectdemande&amp;id=' . $parms['id'] . '" method="post">
+		<form action="" method="post">
 			<p class="headerSelectionBox">Etes-vous sûr de vouloir refuser cette demande ?</p>
 			<table class="searchContainer">
 				<tr>

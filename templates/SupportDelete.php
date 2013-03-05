@@ -1,7 +1,7 @@
 <?php
 echo('
 	<div class="selectionBox">
-		<form action="index.php?page=supports&amp;action=delete&amp;id=' . $parms["id"] . '" method="post">
+		<form action="" method="post">
 			<p class="headerSelectionBox">Etes-vous sûr de vouloir supprimer ce support ?</p>
 			<table class="searchContainer">
 				<tr><th>Classe :</th><td>' . $parms['classe'] . '</td></tr>

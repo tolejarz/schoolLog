@@ -3,7 +3,7 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 		<title><?php echo SITE_NAME; ?> - connexion</title>
-		<link rel="stylesheet" type="text/css" href="templates/style.css" />
+		<link rel="stylesheet" type="text/css" href="/resource/style.css" />
 		<script type="text/javascript" src="lib/_js/jquery-1.3.2.min.js"></script>
 		<script type="text/javascript" src="lib/_js/login.js"></script>
 	</head>
