@@ -157,44 +157,6 @@ define('LAST_WEEK', date('W', mktime(12, 0, 0, 8, 31, CURRENT_PROMOTION)));
 
 /* ----------------------------------------------------------------------------- */
 
-$page = $action = '';
-if (!empty($_GET['page'])) {
-    $page = $_GET['page'];
-} /*else {
-    if ($_SESSION['user_privileges'] == 'eleve') {
-        header('Location: index.php?page=emploi_du_temps');
-        die();
-    }
-    if ($_SESSION['user_privileges'] == 'enseignant') {
-        header('Location: index.php?page=emploi_du_temps');
-        die();
-    }
-    if ($_SESSION['user_privileges'] == 'superviseur') {
-        header('Location: index.php?page=emploi_du_temps&action=demande');
-        die();
-    }
-    if ($_SESSION['user_privileges'] == 'administrateur') {
-        header('Location: index.php?page=sauvegardes');
-        die();
-    }
-}*/
-/*
-$pages = array(
-    'classes'           => 'ClasseController',
-    'emploi_du_temps'   => 'CalendrierController',
-    'materiels'         => 'MaterielController',
-    'matieres'          => 'MatiereController',
-    'matieresClasse'    => 'MatieresClasseController',
-    'reservations'      => 'ReservationController',
-    'sauvegardes'       => 'SauvegardeController',
-    'supports'          => 'SupportController',
-    'utilisateurs'      => 'UserController',
-);
-if (array_key_exists($page, $pages)) {
-    $controller = new $pages[$page]($dbo);
-    $controller->perform();
-}
-*/
         foreach ($this->uri as $action => $query_params) {
             if (array_key_exists('uri', $query_params)
                 && strpos($query_params['uri'], '?') === false
