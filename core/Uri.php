@@ -4,8 +4,14 @@ class Uri {
     private $arguments;
     
     public function __construct() {
-        $c = file_get_contents('routes/uri.json');
-        $this->uri = json_decode($c, true);
+        $files = glob('routes/*.json');
+        $this->uri = array();
+        if (!empty($files)) {
+            foreach ($files as $file) {
+                $c = file_get_contents($file);
+                $this->uri += json_decode($c, true);
+            }
+        }
     }
     
     private function handleRawRequest(&$query) {

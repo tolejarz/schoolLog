@@ -1,0 +1,30 @@
+{
+    "BackupList":{
+        "uri":"/backup",
+        "reverse_uri":"/backup",
+        "handler":"BackupHandler.list",
+        "args":[],
+        "method":"get"
+    },
+    "BackupAdd":{
+        "uri":"/backup/add",
+        "reverse_uri":"/backup/add",
+        "handler":"BackupHandler.add",
+        "args":[],
+        "method":"get"
+    },
+    "BackupDelete":{
+        "uri":"/backup/delete/(.+)",
+        "reverse_uri":"/backup/delete/%s",
+        "handler":"BackupHandler.delete",
+        "args":["filename"],
+        "method":"get"
+    },
+    "BackupRestore":{
+        "uri":"/backup/restore/(.+)",
+        "reverse_uri":"/backup/restore/%s",
+        "handler":"BackupHandler.restore",
+        "args":["filename"],
+        "method":"get"
+    }
+}

@@ -82,7 +82,6 @@ class UserModel extends Model {
 			
 			/* Si un élève n'existe pas dans la base on l'ajoute lors de sa première connexion */
 			if(empty($existe)) {
-				import('UserModel');
 				$parms = array(
 							'droits' 		=> $connect['droits'],
 							'login' 		=> $l,
@@ -98,7 +97,6 @@ class UserModel extends Model {
 			} else if(empty($existe['charte_signee'])) {
 				$infosLDAP = recupererInfos(LDAP_SERVER,$l);
 				$id = $this->dbo->sqlEval("select id from utilisateurs where login='" . $l . "'");
-				import('UserModel');
 				$parms = array(
 							'droits' 		=> $infosLDAP['droits'],
 							'login' 		=> $l,

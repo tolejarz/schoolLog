@@ -1,0 +1,28 @@
+{
+    "SupportList":{
+        "uri":"/support",
+        "handler":"SupportHandler.list",
+        "args":[],
+        "method":"get"
+    },
+    "SupportAdd":{
+        "uri":"/support/add",
+        "handler":"SupportHandler.add",
+        "args":[],
+        "method":"get"
+    },
+    "SupportDelete":{
+        "uri":"/support/delete/(\\d+)",
+        "reverse_uri":"/support/delete/%d",
+        "handler":"SupportHandler.delete",
+        "args":["support_id"],
+        "method":"get"
+    },
+    "SupportEdit":{
+        "uri":"/support/edit/(\\d+)",
+        "reverse_uri":"/support/edit/%d",
+        "handler":"SupportHandler.edit",
+        "args":["support_id"],
+        "method":"get"
+    }
+}

@@ -1,0 +1,28 @@
+{
+    "EquipmentList":{
+        "uri":"/equipment",
+        "handler":"EquipmentHandler.list",
+        "args":[],
+        "method":"get"
+    },
+    "EquipmentAdd":{
+        "uri":"/equipment/add",
+        "handler":"EquipmentHandler.add",
+        "args":[],
+        "method":"get"
+    },
+    "EquipmentEdit":{
+        "uri":"/equipment/edit/(\\d+)",
+        "reverse_uri":"/equipment/edit/%d",
+        "handler":"EquipmentHandler.edit",
+        "args":["equipment_id"],
+        "method":"get"
+    },
+    "EquipmentDelete":{
+        "uri":"/equipment/delete/(\\d+)",
+        "reverse_uri":"/equipment/delete/%d",
+        "handler":"EquipmentHandler.delete",
+        "args":["equipment_id"],
+        "method":"get"
+    }
+}

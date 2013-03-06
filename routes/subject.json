@@ -1,0 +1,29 @@
+{
+    "SubjectList":{
+        "uri":"/subject",
+        "handler":"SubjectHandler.list",
+        "args":[],
+        "method":"get"
+    },
+    "SubjectAdd":{
+        "uri":"/subject/add",
+        "reverse_uri":"/subject/add",
+        "handler":"SubjectHandler.add",
+        "args":[],
+        "method":"get"
+    },
+    "SubjectEdit":{
+        "uri":"/subject/edit/(\\d+)",
+        "reverse_uri":"/subject/edit/%d",
+        "handler":"SubjectHandler.edit",
+        "args":["subject_id"],
+        "method":"get"
+    },
+    "SubjectDelete":{
+        "uri":"/subject/delete/(\\d+)",
+        "reverse_uri":"/subject/delete/%d",
+        "handler":"SubjectHandler.delete",
+        "args":["subject_id"],
+        "method":"get"
+    }
+}

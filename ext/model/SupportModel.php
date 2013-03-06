@@ -26,8 +26,6 @@ class SupportModel extends Model {
 	}
 	
 	function delete($i) {
-		import('FileManipulation');
-		
 		$filename = $this->dbo->sqleval('select nom_fichier from supports where id=' . $i);
 		$f = new FileManipulation();
 		$f->delete(UPLOAD_PATH . $filename);

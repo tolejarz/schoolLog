@@ -15,8 +15,14 @@ class Router {
     
     public static function build($route, $args = array(), $query_parms = array()) {
         if (self::$routes === NULL) {
-            $uri = file_get_contents('routes/uri.json');
-            self::$routes = json_decode($uri, true);
+            $files = glob('routes/*.json');
+            self::$routes = array();
+            if (!empty($files)) {
+                foreach ($files as $file) {
+                    $c = file_get_contents($file);
+                    self::$routes += json_decode($c, true);
+                }
+            }
         }
         
         //if (!array_key_exists($route, $uri)) die();
@@ -36,8 +42,14 @@ class Router {
     
     public static function redirect($route, $args = array(), $query_parms = array()) {
         if (self::$routes === NULL) {
-            $uri = file_get_contents('routes/uri.json');
-            self::$routes = json_decode($uri, true);
+            $files = glob('routes/*.json');
+            self::$routes = array();
+            if (!empty($files)) {
+                foreach ($files as $file) {
+                    $c = file_get_contents($file);
+                    self::$routes += json_decode($c, true);
+                }
+            }
         }
         
         if (!array_key_exists($route, self::$routes)) die();

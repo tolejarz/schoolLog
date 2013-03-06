@@ -1,0 +1,9 @@
+{
+    "BookingList":{
+        "uri":"/booking",
+        "reverse_uri":"/booking",
+        "handler":"BookingHandler.list",
+        "args":[],
+        "method":"get"
+    }
+}
