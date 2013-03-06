@@ -3,13 +3,13 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 		<title><?php echo(SITE_NAME); ?> - charte</title>
-		<link rel="stylesheet" type="text/css" href="templates/style.css" />
+		<link rel="stylesheet" type="text/css" href="/resource/style.css" />
 		<script type="text/javascript" src="lib/_js/jquery-1.3.2.min.js"></script>
 		<script type="text/javascript" src="lib/_js/charte.js"></script>
 	</head>
 	<body>
 		<div id="charterContainer">
-			<div class="centered"><img src="templates/img/bidon.png" /></div>
+			<div class="centered"><img src="/resource/bidon.png" /></div>
 			<p class="separator2"></p>
 			<p class="centered">
 				Bienvenue <span class="log"><?php echo(($_SESSION['user_privileges'] == 'eleve' ? $_SESSION['user_surname'] : $_SESSION['user_civility']) . ' ' . $_SESSION['user_name']); ?></span>.
