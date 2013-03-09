@@ -4,7 +4,7 @@ class MatiereController extends Controller {
     public function doList() {
         if ($_SESSION['user_privileges'] == 'superviseur') {
             /* Récupération de l'id et du nom de toutes les matières dans la base */
-            $m = new MatiereModel($this->dbo);
+            $m = new MatiereModel();
             $v = new MatiereDefaultView();
             $v->show(array('subjects' => $m->listing()));
         }
@@ -14,7 +14,7 @@ class MatiereController extends Controller {
     public function doDelete($args) {
         $subject_id = $args['subject_id'];
         if ($_SESSION['user_privileges'] == 'superviseur') {
-            $m = new MatiereModel($this->dbo);
+            $m = new MatiereModel();
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (isset($_POST['validation'])) {
                     /*Suppression la matière dans la base */
@@ -33,7 +33,7 @@ class MatiereController extends Controller {
     public function doAdd() {
         if ($_SESSION['user_privileges'] == 'superviseur') {
             /* Récupération de l'id et du libelle de toutes les classes dans la base */
-            $m = new ClasseModel($this->dbo);
+            $m = new ClasseModel();
             $classes = $m->listing();
             
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -54,10 +54,10 @@ class MatiereController extends Controller {
                 if (!isset($_SESSION['ERROR_MSG'])) {
                     if (isset($_POST['validation'])) {
                         /* S'il n'y a pas d'erreurs, ajout de la matière dans la base */
-                        $m = new MatiereModel($this->dbo);
+                        $m = new MatiereModel();
                         $id_matiere = $m->create(array('nom' => $_POST['nom']));
                         /* Pour chaque classe cochée on crée une entrée qui l'associe à la matière dans la base */
-                        $m = new MatieresClasseModel($this->dbo);
+                        $m = new MatieresClasseModel();
                         foreach($classes as $c)
                         {
                             if(isset($_POST['c_'.$c['id']])) {
@@ -78,7 +78,7 @@ class MatiereController extends Controller {
         $subject_id = $args['subject_id'];
         if ($_SESSION['user_privileges'] == 'superviseur') {
             /* Récupération des informations associées à la matière dans la base */
-            $m = new MatiereModel($this->dbo);
+            $m = new MatiereModel();
             $r = $m->get(array('id' => $subject_id));
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (isset($_POST['annulation'])) {

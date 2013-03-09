@@ -10,10 +10,10 @@ class CalendrierController extends Controller {
         
         $r = array();
         if ($_SESSION['user_privileges'] == 'eleve') {
-            $m = new CalendrierModel($this->dbo);
+            $m = new CalendrierModel();
             $r['jours'] = $m->get(array('id_eleve' => $_SESSION['user_id'], 'start' => $start, 'end' => $end,  'viewer_type' => $_SESSION['user_privileges']));
         } else if ($_SESSION['user_privileges'] == 'enseignant') {
-            $m = new CalendrierModel($this->dbo);
+            $m = new CalendrierModel();
             $r['jours'] = $m->get(array('id_enseignant' => $_SESSION['user_id'], 'start' => $start, 'end' => $end, 'viewer_type' => $_SESSION['user_privileges']));
             $r['_displayClasses'] = true;
             $r['_blockDnD'] = true;
@@ -48,7 +48,7 @@ class CalendrierController extends Controller {
                 $end = $dates[4];
                 
                 $r = array();
-                $m = new CalendrierModel($this->dbo);
+                $m = new CalendrierModel();
                 $r['jours'] = $m->get(array('id_classe' => $id_classe, 'start' => $start, 'end' => $end, 'viewer_type' => $_SESSION['user_privileges']));
                 $r['_arg'] = '&amp;action=' . $this->_getArg('action') . '&amp;id_classe=' . $this->_getArg('id_classe');
                 $r['_week'] = $week;
@@ -68,7 +68,7 @@ class CalendrierController extends Controller {
             $end = $dates[4];
             
             /* Récupération de la liste des enseignants dans la base */
-            $m = new UserModel($this->dbo);
+            $m = new UserModel();
             $enseignants = $m->listingEnseignants();
             
             $id_enseignant = $this->_getArg('id_enseignant');
@@ -80,7 +80,7 @@ class CalendrierController extends Controller {
             $v->show(array('enseignants' => $enseignants, 'id_enseignant' => $id_enseignant));
             
             if (!empty($id_enseignant)) {
-                $m = new CalendrierModel($this->dbo);
+                $m = new CalendrierModel();
                 $r['jours'] = $m->get(array('id_enseignant' => $id_enseignant, 'start' => $start, 'end' => $end, 'viewer_type' => $_SESSION['user_privileges']));
                 $r['_arg'] = '&amp;action=' . $this->_getArg('action') . '&amp;id_enseignant=' . $this->_getArg('id_enseignant');
                 $r['_week'] = $week;
@@ -122,7 +122,7 @@ class CalendrierController extends Controller {
                 } else if (($_POST['hasDateReport'] == 'yes') && (date('w', $date_report_timestamp) % 6 == 0)) {
                     $_SESSION['ERROR_MSG'] = 'Veuillez choisir un jour différent de samedi ou dimanche pour la date de report';
                 } else {
-                    $m = new CalendrierModel($this->dbo);
+                    $m = new CalendrierModel();
                     
                     /* recherche du cours ayant lieu à $date_rigine $heure_origine */
                     $parms = array(
@@ -174,7 +174,7 @@ class CalendrierController extends Controller {
                                 'id_enseignant'             => in_array('enseignant', $_SESSION['user_privileges']) ? $_SESSION['user_id'] : $this->dbo->sqleval('select id_enseignant from modele_planning where id=' . $id_cours),
                                 'id_modele_planning'        => $id_cours
                             );
-                            $m = new CalendrierModel($this->dbo);
+                            $m = new CalendrierModel();
                             $id_operation = $m->createOperation($parms);
                             
                             /* si la demande a bien été créée */
@@ -210,7 +210,7 @@ class CalendrierController extends Controller {
                     }
                 }
             }
-            $m = new ClasseModel($this->dbo);
+            $m = new ClasseModel();
             $classes = $m->listing();
             
             $v = new CalendrierDemandeAddView();
@@ -255,7 +255,7 @@ class CalendrierController extends Controller {
             if (($_SESSION['user_privileges'] == 'enseignant') && empty($id_matiere)) {
                 $r['result'] = 'not-created';
             } else {
-                $m = new CalendrierModel($this->dbo);
+                $m = new CalendrierModel();
                 // cas mise à jour de la demande existante
                 if (count($first_token) == 2) {
                     $r = $m->updateOperation($first_token[1], $parms);
@@ -312,7 +312,7 @@ class CalendrierController extends Controller {
                 $emails = implode(';', $emails);
                 
                 // récupération de l'opération qu'on vient de créer
-                $m = new CalendrierModel($this->dbo);
+                $m = new CalendrierModel();
                 $op = $m->getOperation(array('id' => ($r['result'] == 'created' ? $id : $first_token[1])));
                 
                 $v = new DemandeEmailView();
@@ -328,7 +328,7 @@ class CalendrierController extends Controller {
     }
     
     public function doRequestList() {
-        $m = new CalendrierModel($this->dbo);
+        $m = new CalendrierModel();
         $parms = array();
         $parms['demandes'] = $m->listingOperations($_SESSION['user_privileges'] == 'enseignant' ? array('id_enseignant' => $_SESSION['user_id']) : array());
         $v = new CalendrierDemandeView();
@@ -338,7 +338,7 @@ class CalendrierController extends Controller {
     public function doRequestReject($args) {
         $request_id = $args['request_id'];
         if (in_array($_SESSION['user_privileges'], array('enseignant', 'superviseur'))) {
-            $m = new CalendrierModel($this->dbo);
+            $m = new CalendrierModel();
             $r = $m->getOperation(array('id' => $request_id));
             
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -370,7 +370,7 @@ class CalendrierController extends Controller {
         if (in_array($_SESSION['user_privileges'], array('enseignant', 'superviseur'))) {
             $ajax = $this->_getArg('ajax');
             
-            $m = new CalendrierModel($this->dbo);
+            $m = new CalendrierModel();
             $r = $m->getOperation(array('id' => $request_id));
             
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -387,7 +387,7 @@ class CalendrierController extends Controller {
                         $params['date_report'] = $this->FormatDateTimeFrToUs($_POST['date_report'] . ' ' . sprintf('%02d', $_POST['heure_report_h']) . ':' . sprintf('%02d', $_POST['heure_report_m']));
                     }
                     if ($m->updateOperation($request_id, $params) > 0) {
-                        $m = new CalendrierModel($this->dbo);
+                        $m = new CalendrierModel();
                         $r = $m->getOperation(array('id' => $request_id));
                         
                         $v = new DemandeEmailView();
@@ -471,9 +471,9 @@ class CalendrierController extends Controller {
         if ($_SESSION['user_privileges'] != 'superviseur') {
             die();
         }
-        $c = new ClasseModel($this->dbo);
+        $c = new ClasseModel();
         $classes = $c->listing();
-        $m = new CalendrierModel($this->dbo);
+        $m = new CalendrierModel();
         foreach ($classes as &$class) {
             $class['periods'] = $m->getPeriods($class['id']);
         }
@@ -488,7 +488,7 @@ class CalendrierController extends Controller {
             die();
         }
         
-        $m = new CalendrierModel($this->dbo);
+        $m = new CalendrierModel();
         $r = $m->getPeriod($period_id);
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (isset($_POST['validation'])) {
@@ -525,7 +525,7 @@ class CalendrierController extends Controller {
                     'date_fin'          => date('Y-m-d H:i:s', $date_fin),
                     'id_classe'         => $id
                 );
-                $m = new CalendrierModel($this->dbo);
+                $m = new CalendrierModel();
                 $id_periode = $m->createPeriod($parms);
                 if ($parms['type'] != 'vacances') {
                     foreach ($_POST as $k => $v) {
@@ -538,7 +538,7 @@ class CalendrierController extends Controller {
                 Router::redirect('CalendarPeriodList', NULL, array('class_id' => $id));
             }
         }
-        $m = new MatieresClasseModel($this->dbo);
+        $m = new MatieresClasseModel();
         $r = array(
             'id_classe'     => $id,
             'matieres'      => $m->getSubjectsClass(array('id' => $id))
@@ -554,7 +554,7 @@ class CalendrierController extends Controller {
             die();
         }
         
-        $m = new CalendrierModel($this->dbo);
+        $m = new CalendrierModel();
         $r = $m->getPeriod($period_id);
         
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -564,7 +564,7 @@ class CalendrierController extends Controller {
                     'date_debut'        => $this->FormatDateTimeFrToUs($this->_getArg('date_debut'), false),
                     'date_fin'          => $this->FormatDateTimeFrToUs($this->_getArg('date_fin'), false),
                 );
-                $m = new CalendrierModel($this->dbo);
+                $m = new CalendrierModel();
                 $m->updatePeriod($period_id, $parms);
                 if ($parms['type'] != 'vacances') {
                     $usedIds = array();
@@ -594,11 +594,11 @@ class CalendrierController extends Controller {
             }
             Router::redirect('CalendarPeriodList', array('id_classe' => $r['id_classe']));
         }
-        $c = new ClasseModel($this->dbo);
+        $c = new ClasseModel();
         $v = new CalendrierEditPeriodView();
         $r['classes'] = $c->listing();
         $r['cours'] = $this->dbo->query('select id, jour+0 as jour, jour as jour_libelle, date_format(heure_debut, "%H:%i") as heure_debut, date_format(heure_fin, "%H:%i") as heure_fin, id_matiere, id_periode from modele_planning where id_classe=' . $r['id_classe'] . ' and id_periode=' . $period_id);
-        $m = new MatieresClasseModel($this->dbo);
+        $m = new MatieresClasseModel();
         $r['matieres'] = $m->getSubjectsClass($r['id_classe']);
         $v->show($r);
     }

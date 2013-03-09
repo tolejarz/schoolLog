@@ -25,8 +25,8 @@ if (!empty($demands)) {
 			if ($d['etat'] == 'en attente') {
 				echo('
 					<td class="centered">
-						<a href="' . Router::build('CalendarRequestAccept', array('request_id' => $d['id'])) . '" target="_self"><img alt="Accepter" src="/resource/accept.png" title="Accepter" /></a>
-						<a href="' . Router::build('CalendarRequestReject', array('request_id' => $d['id'])) . '" target="_self"><img alt="Refuser" src="/resource/refuse.png" title="Refuser" /></a>
+						<a href="' . Router::build('CalendarRequestAccept', array('request_id' => $d['id'])) . '" target="_self"><img alt="Accepter" src="/resource/img/accept.png" title="Accepter" /></a>
+						<a href="' . Router::build('CalendarRequestReject', array('request_id' => $d['id'])) . '" target="_self"><img alt="Refuser" src="/resource/img/refuse.png" title="Refuser" /></a>
 					</td>');
 			} else {
 				echo('<td class="centered">-</td>');

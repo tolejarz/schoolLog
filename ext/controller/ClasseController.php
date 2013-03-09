@@ -4,7 +4,7 @@ class ClasseController extends Controller {
     public function doList() {
         if ($_SESSION['user_privileges'] == 'superviseur') {
             /* Récupération de l'id, du libellé et de l'email de toutes les classes dans la base */
-            $m = new ClasseModel($this->dbo);
+            $m = new ClasseModel();
             $v = new ClasseDefaultView();
             $v->show(array('classes' => $m->listing()));
         }
@@ -14,7 +14,7 @@ class ClasseController extends Controller {
     public function doDelete($args) {
         $class_id = $args['class_id'];
         if ($_SESSION['user_privileges'] == 'superviseur') {
-            $m = new ClasseModel($this->dbo);
+            $m = new ClasseModel();
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (isset($_POST['validation'])) {
                     /*Suppression de la classe dans la base */
@@ -54,7 +54,7 @@ class ClasseController extends Controller {
                 if (!isset($_SESSION['ERROR_MSG'])) {
                     if (isset($_POST['validation'])) {
                         /* S'il n'y a pas d'erreurs, ajout de la classe dans la base */
-                        $s = new ClasseModel($this->dbo);
+                        $s = new ClasseModel();
                         $s->create(array('libelle' => $_POST['libelle'], 'email' => $_POST['email']));
                     }
                     Router::redirect('ClassList');
@@ -70,7 +70,7 @@ class ClasseController extends Controller {
         $class_id = $args['class_id'];
         if ($_SESSION['user_privileges'] == 'superviseur') {
             /* Récupération des informations associées à la classe dans la base */
-            $m = new ClasseModel($this->dbo);
+            $m = new ClasseModel();
             $r = $m->get(array('id' => $class_id));
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (isset($_POST['annulation'])) {

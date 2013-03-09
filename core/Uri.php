@@ -101,88 +101,34 @@ class Uri {
         $query = null;
         //$url_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $url_path = explode('?', $_SERVER['REQUEST_URI']);
-        $url_path = $url_path[0];
+        $url_path = rtrim($url_path[0], '/');
         $url_matched = false;
         
         $request_method = !empty($_SERVER['REQUEST_METHOD']) ? strtolower(trim($_SERVER['REQUEST_METHOD'])) : NULL;
         
         
-//error_log('URI: ' . $url_path);
-
-require_once('lib/epsilib.php');
-require_once('config.php');
-
-//
-$configurator = Configurator::getInstance('config/config.json');
-$conf = $configurator->getConfiguration();
-//
-$dbo = new MySQLiDBO($conf['database']['schoollog']['host'], $conf['database']['schoollog']['username'], $conf['database']['schoollog']['password'], $conf['database']['schoollog']['database']);
-
-session_start();
-
-if (strpos($url_path, 'resource') === false) {
-    if (!isset($_SESSION['user_id'])) {
-        $controller = new AuthController($dbo);
-        $controller->perform('login');
-        die();
-    }
-    if (empty($_SESSION['user_charter'])) {
-        $controller = new AuthController($dbo);
-        $controller->perform('charte');
-        die();
-    }
-}
-
-if(isset($_GET["numero"]))
-{
-    if($_GET['redir']){
-        header("Location: " . SITE_DIR . "index.php?numero=".$_GET['numero']);
-        die();
-    }
-    if ($_GET["numero"] == '404') {
-        $_SESSION['ERROR_MSG'] = "Page non trouvée";
-    } else if ($_GET["numero"] == '403') {
-        $_SESSION['ERROR_MSG'] = "L'accès à cette zone vous est interdit";
-    } else {
-        $_SESSION['ERROR_MSG'] = "Une erreur est survenue, essayez de rafraîchir la page ou de réessayer plus tard";
-    };
-}
-
-/* récupération de l'année scolaire en cours */
-$year = date('m') >= 9 ? date('Y') : date('Y') - 1;
-define('CURRENT_PROMOTION', $year);
-/* récupère le numéro de la semaine du 31 août de l'annéde la promo actuelle */
-define('LAST_WEEK', date('W', mktime(12, 0, 0, 8, 31, CURRENT_PROMOTION)));
-
-
-/* ----------------------------------------------------------------------------- */
-
+        $r = NULL;
         foreach ($this->uri as $action => $query_params) {
-            if (array_key_exists('uri', $query_params)
-                && strpos($query_params['uri'], '?') === false
-                && preg_match('`^' . $query_params['uri'] . '$`', $url_path, $matches)) {
+            if (preg_match('`^' . rtrim($query_params['uri'], '/') . '$`', $url_path, $matches)) {
                 $url_matched = true;
-                
-                $handler = explode('.', $query_params['handler']);
-                $handler_class = $handler[0];
-                $handler_method = 'do' . ucfirst($handler[1]);
-                
+                $handler_class = $handler_method = '';
+                if (!empty($query_params['handler'])) {
+                    $handler = explode('.', $query_params['handler']);
+                    $handler_class = $handler[0];
+                    $handler_method = 'do' . ucfirst($handler[1]);
+                }
                 
                 $args = array();
                 array_shift($matches);
                 foreach ($query_params['args'] as $i => $arg) {
-                    if (!isset($matches[$i])) {
-                        $args[$arg] = null;
-                    } else {
-                        $args[$arg] = urldecode(urldecode($matches[$i]));
-                    }
+                    $args[$arg] = isset($matches[$i]) ? urldecode(urldecode($matches[$i])) : NULL;
                 }
                 
-                $handler = new $handler_class($args, $conf, $dbo);
-ob_start();
-                $handler->$handler_method();
-$html = ob_get_contents();
-ob_end_clean();
+                $r = array(
+                    'handler'   => $handler_class,
+                    'method'    => $handler_method,
+                    'args'      => $args,
+                );
                 
                 /*
                 $query_params['method'] = !empty($query_params['method']) ? strtolower(trim($query_params['method'])) : NULL;
@@ -201,14 +147,8 @@ ob_end_clean();
             error_log(sprintf('%s URI not matched (referer: %s)', $url_path, !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'unknown'));
         }
         
-        
-        elseif ($handler_class !== 'ResourceHandler') {
-            include_once 'templates/layout/main.phtml';
-        } else {
-            echo $html;
-        }
-        
-        return $query;
+        return !empty($r) ? $r : NULL;
+        //return $query;
     }
 }
 ?>

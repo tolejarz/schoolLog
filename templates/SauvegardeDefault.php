@@ -15,9 +15,9 @@ if (!empty($sauvegardes)) {
 			</tr>');
 	foreach ($sauvegardes as $sauvegarde) {
 		echo('
-			<tr><td class="centered"><a href="' . Router::build('BackupDelete', array('filename' => $sauvegarde['fichier'])) . '" target="_self"><img alt="Supprimer" src="templates/img/delete.png" title="Supprimer" /></a></td>
+			<tr><td class="centered"><a href="' . Router::build('BackupDelete', array('filename' => $sauvegarde['fichier'])) . '" target="_self"><img alt="Supprimer" src="/resource/img/delete.png" title="Supprimer" /></a></td>
 				<td class="centered">' . $sauvegarde['date'] . '</td><td class="centered">' . $sauvegarde['heure'] . '</td>
-				<td class="centered"><a href="' . Router::build('BackupRestore', array('filename' => $sauvegarde['fichier'])) . '" target="_self"><img alt="Restaurer" src="templates/img/dbrestore.png" title="Restaurer" /></a></td>
+				<td class="centered"><a href="' . Router::build('BackupRestore', array('filename' => $sauvegarde['fichier'])) . '" target="_self"><img alt="Restaurer" src="/resource/img/dbrestore.png" title="Restaurer" /></a></td>
 			</tr>');
 	}
 	echo('</table>');

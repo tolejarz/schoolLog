@@ -5,7 +5,7 @@ class MatieresClasseController extends Controller {
 	public function doList() {
 		if ($_SESSION['user_privileges'] == 'superviseur') {
 			/* Récupération de l'id et du libellé de toutes les classes dans la base */
-			$m = new ClasseModel($this->dbo);
+			$m = new ClasseModel();
 			$classes = $m->listing();
 			
 			/* Si aucune classe n'est passée en paramètres, on affiche les informations de la première classe disponible dans la base */
@@ -45,7 +45,7 @@ class MatieresClasseController extends Controller {
 	public function doDelete($args) {
 		$class_id = $args['class_id'];
 		if ($_SESSION['user_privileges'] == 'superviseur') {
-			$m = new MatieresClasseModel($this->dbo);
+			$m = new MatieresClasseModel();
 			if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				if (isset($_POST['validation'])) {
 					/* Suppression de toutes les associations matière - classe dans la base */
@@ -71,12 +71,12 @@ class MatieresClasseController extends Controller {
 		$class_id = $args['class_id'];
 		if ($_SESSION['user_privileges'] == 'superviseur') {
 			/* Récupération de l'id et du nom de tous les enseignants dans la base */
-			$m = new UserModel($this->dbo);
+			$m = new UserModel();
 			$enseignants = $m->listingEnseignants();
 			
 			if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				if (isset($_POST['validation'])) {
-					$m = new MatieresClasseModel($this->dbo);
+					$m = new MatieresClasseModel();
 					$nb_add = 0;
 					/* Pour chaque enseignant coché on crée une entrée qui l'associe à la matière de la classe dans la base */
 					foreach($enseignants as $e) {
@@ -119,11 +119,11 @@ class MatieresClasseController extends Controller {
 		$class_id = $args['class_id'];
 		if ($_SESSION['user_privileges'] == 'superviseur') {
 			/* Récupération des informations associées à la matière de la classe dans la base */
-			$m = new MatieresClasseModel($this->dbo);
+			$m = new MatieresClasseModel();
 			$r = $m->get(array('id_classe' => $class_id, 'id_matiere' => $this->_getArg('id_matiere')));
 			
 			/* Récupération de l'id et du nom de tous les enseignants dans la base */
-			$m = new UserModel($this->dbo);
+			$m = new UserModel();
 			$enseignants = $m->listingEnseignants();
 			
 			/* Récupération de tous les id des enseignants associés à la matière de la classe dans la base */
@@ -135,7 +135,7 @@ class MatieresClasseController extends Controller {
 			
 			if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				if (isset($_POST['validation'])) {
-					$m = new MatieresClasseModel($this->dbo);
+					$m = new MatieresClasseModel();
 					$m->delete(array('id_classe' => $class_id, 'id_matiere' => $this->_getArg('id_matiere')));
 					
 					$hasEnseignants = false;

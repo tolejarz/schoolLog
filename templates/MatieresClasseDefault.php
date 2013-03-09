@@ -16,8 +16,8 @@ if (empty($parms['subjects'])) {
 		echo('
 			<tr>
 				<td class="centered">
-					<a href="' . Router::build('ClassSubjectDelete', array('class_id' => $parms['id_classe']), array('id_matiere' => $subject['id'])) . '" target="_self"><img alt="Supprimer" src="/resource/delete.png" title="Supprimer" /></a>
-					<a href="' . Router::build('ClassSubjectEdit', array('class_id' => $parms['id_classe']), array('id_matiere' => $subject['id'])) . '" target="_self"><img alt="Modifier" src="/resource/edit.png" title="Modifier" /></a></td>
+					<a href="' . Router::build('ClassSubjectDelete', array('class_id' => $parms['id_classe']), array('id_matiere' => $subject['id'])) . '" target="_self"><img alt="Supprimer" src="/resource/img/delete.png" title="Supprimer" /></a>
+					<a href="' . Router::build('ClassSubjectEdit', array('class_id' => $parms['id_classe']), array('id_matiere' => $subject['id'])) . '" target="_self"><img alt="Modifier" src="/resource/img/edit.png" title="Modifier" /></a></td>
 				<td>' . $subject['nom'] . '</td>
 				<td>');
 		if ($subject['enseignants'] == null) {

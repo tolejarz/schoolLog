@@ -4,7 +4,7 @@ class UserController extends Controller {
     public function doList() {
         if (in_array($_SESSION['user_privileges'], array('superviseur', 'administrateur'))) {
             /* récupération de la liste des enseignants dans la base de données */
-            $m = new UserModel($this->dbo);
+            $m = new UserModel();
             $v = new UserDefaultView();
             $v->show(array('enseignants' => $m->listingEnseignants()));
         }
@@ -15,7 +15,7 @@ class UserController extends Controller {
         $user_id = $args['user_id'];
         
         if (in_array($_SESSION['user_privileges'], array('superviseur', 'administrateur'))) {
-            $m = new UserModel($this->dbo);
+            $m = new UserModel();
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (isset($_POST['validation'])) {
                     /* Suppression de l'enseignant */
@@ -56,10 +56,10 @@ class UserController extends Controller {
                             'email'         => $infosLDAP['email']
                         );
                         
-                        $m = new UserModel($this->dbo);
+                        $m = new UserModel();
                         $id = $m->create($parms);
                         
-                        $m = new MatieresClasseModel($this->dbo);
+                        $m = new MatieresClasseModel();
                         foreach ($_POST as $key => $value) {
                             if (substr($key, 0, 3) == 'cm_') {
                                 $ids = explode('_', substr($key, 3));
@@ -72,9 +72,9 @@ class UserController extends Controller {
             }
             
             /* récupération des classes / matières */
-            $m = new ClasseModel($this->dbo);
+            $m = new ClasseModel();
             $resc = $m->listing();
-            $m = new MatieresClasseModel($this->dbo);
+            $m = new MatieresClasseModel();
             $classes = array();
             foreach ($resc as $c) {
                 $matieres =  $m->getSubjectsClass(array('id' => $c['id']));
@@ -90,7 +90,7 @@ class UserController extends Controller {
         $user_id = $args['user_id'];
         
         if (in_array($_SESSION['user_privileges'], array('superviseur', 'administrateur'))) {
-            $m = new UserModel($this->dbo);
+            $m = new UserModel();
             $r = $m->get(array('id' => $user_id));
             
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -115,7 +115,7 @@ class UserController extends Controller {
                     }
                     
                     $r = $this->dbo->delete('delete from enseignants_matieres_classes where id_enseignant=' . $user_id);
-                    $m = new MatieresClasseModel($this->dbo);
+                    $m = new MatieresClasseModel();
                     foreach ($_POST as $key => $value) {
                         if (substr($key, 0, 3) == 'cm_') {
                             $ids = explode('_', substr($key, 3));
@@ -127,9 +127,9 @@ class UserController extends Controller {
             }
             
             /* récupération des matières de chaque classe */
-            $m = new ClasseModel($this->dbo);
+            $m = new ClasseModel();
             $resc = $m->listing();
-            $m = new MatieresClasseModel($this->dbo);
+            $m = new MatieresClasseModel();
             $classes = array();
             foreach ($resc as $c) {
                 $matieres =  $m->getSubjectsClass(array('id' => $c['id']));
@@ -137,7 +137,7 @@ class UserController extends Controller {
             }
             
             /* récupération des matières de l'enseignant sélectionné */
-            $m = new MatieresClasseModel($this->dbo);
+            $m = new MatieresClasseModel();
             $matieres_enseignant = $m->getSubjectsEnseignant(array('id' => $user_id));
             $params = array(
                 'id'                    => $user_id,

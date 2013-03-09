@@ -3,13 +3,13 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 		<title><?php echo(SITE_NAME); ?> - charte</title>
-		<link rel="stylesheet" type="text/css" href="/resource/style.css" />
-		<script type="text/javascript" src="lib/_js/jquery-1.3.2.min.js"></script>
-		<script type="text/javascript" src="lib/_js/charte.js"></script>
+		<link rel="stylesheet" type="text/css" href="/resource/css/style.css" />
+		<script type="text/javascript" src="/resource/javascript/jquery-1.3.2.min.js"></script>
+		<script type="text/javascript" src="/resource/javascript/charte.js"></script>
 	</head>
 	<body>
 		<div id="charterContainer">
-			<div class="centered"><img src="/resource/bidon.png" /></div>
+			<div class="centered"><img src="/resource/img/bidon.png" /></div>
 			<p class="separator2"></p>
 			<p class="centered">
 				Bienvenue <span class="log"><?php echo(($_SESSION['user_privileges'] == 'eleve' ? $_SESSION['user_surname'] : $_SESSION['user_civility']) . ' ' . $_SESSION['user_name']); ?></span>.
@@ -18,7 +18,7 @@
 				Il s'agit de votre première connexion. Veuillez lire et accepter la charte d'utilisation pour pouvoir utiliser <b><?php echo(SITE_NAME); ?></b>.
 			</p>
 			<p class="separator2"></p>
-			<form action="index.php" method="post">
+			<form action="" method="post">
 				<h2>Charte d'utilisation</h2>
 				<p>
 					L'usage du droit de publication devra respecter toute réglementation applicable dans ce domaine :

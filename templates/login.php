@@ -3,14 +3,14 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 		<title><?php echo SITE_NAME; ?> - connexion</title>
-		<link rel="stylesheet" type="text/css" href="/resource/style.css" />
-		<script type="text/javascript" src="lib/_js/jquery-1.3.2.min.js"></script>
-		<script type="text/javascript" src="lib/_js/login.js"></script>
+		<link rel="stylesheet" type="text/css" href="/resource/css/style.css" />
+		<script type="text/javascript" src="/resource/javascript/jquery-1.3.2.min.js"></script>
+		<script type="text/javascript" src="/resource/javascript/login.js"></script>
 	</head>
 	<body>
-		<form action="index.php" method="post">
+		<form action="" method="post">
 			<div id="logboxContainer">
-				<img src="templates/img/bidon.png" />
+				<img src="/resource/img/bidon.png" />
 				<p id="identify">Veuillez vous identifier pour accéder à <?php echo SITE_NAME; ?>.</p>
 				<?php
 				if (isset($_SESSION['ERROR_MSG'])) {

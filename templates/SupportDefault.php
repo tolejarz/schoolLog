@@ -21,8 +21,8 @@ if (!empty($parms['classes'])) {
 					foreach ($subject['supports'] as $support) {
 						echo('
 							<tr>' .
-								(in_array($_SESSION['user_privileges'], array('enseignant', 'superviseur')) ? '<td class="centered"><a href="' . Router::build('SupportDelete', array('support_id' => $support['id'])) . '" target="_self"><img alt="Supprimer" src="templates/img/delete.png" title="Supprimer" /></a>' : '') .
-								($_SESSION['user_privileges'] == 'enseignant' ? ' <a href="' . Router::build('SupportEdit', array('support_id' => $support['id'])) . '" target="_self"><img alt="Modifier" src="templates/img/edit.png" title="Modifier" /></a>' : '') .
+								(in_array($_SESSION['user_privileges'], array('enseignant', 'superviseur')) ? '<td class="centered"><a href="' . Router::build('SupportDelete', array('support_id' => $support['id'])) . '" target="_self"><img alt="Supprimer" src="/resource/img/delete.png" title="Supprimer" /></a>' : '') .
+								($_SESSION['user_privileges'] == 'enseignant' ? ' <a href="' . Router::build('SupportEdit', array('support_id' => $support['id'])) . '" target="_self"><img alt="Modifier" src="/resource/img/edit.png" title="Modifier" /></a>' : '') .
 								(in_array($_SESSION['user_privileges'], array('enseignant', 'superviseur')) ? '</td>' : '') . '
 								<td class="centeredThin">' . $support['date'] . '</td>' .
 								(in_array($_SESSION['user_privileges'], array('eleve', 'superviseur')) ? '<td class="centeredThin">' . $support['enseignant'] . '</td>' : '') . '

@@ -1,17 +1,17 @@
 <?php
 class AuthController extends Controller {
-    function _doDefaultAction() {
+    public function doLogin() {
+        if (!empty($_SESSION['user_id'])) {
+            $this->defaultRoute();
+        }
         
-    }
-    
-    function _doLogin() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (empty($_POST['login'])) {
                 $_SESSION['ERROR_MSG'] = 'Veuillez remplir le champ <b>Login</b>';
             } elseif (empty($_POST['password'])) {
                 $_SESSION['ERROR_MSG'] = 'Veuillez remplir le champ <b>Mot de passe</b>';
             } else {
-                $u = new UserModel($this->dbo);
+                $u = new UserModel();
                 $login = trim($_POST['login']);
                 $pass = $_POST['password'];
                 //$r = $u->ldapAuth($login, $pass);
@@ -34,13 +34,7 @@ class AuthController extends Controller {
                     $_SESSION['user_lastlog']               = $r['user_lastlog'];
                     $_SESSION['user_charter']               = $r['user_charter'];
                     
-                    if (in_array($r['user_privileges'], array('enseignant', 'eleve'))) {
-                        Router::redirect('Calendar');
-                    } elseif ($r['user_privileges'] == 'superviseur') {
-                        Router::redirect('CalendarRequestList');
-                    } elseif ($r['user_privileges'] == 'administrateur') {
-                        Router::redirect('BackupList');
-                    }
+                    $this->defaultRoute();
                 }
             }
         } else {
@@ -59,18 +53,28 @@ class AuthController extends Controller {
         $v->show(array());
     }
     
+    private function defaultRoute() {
+        if (in_array($_SESSION['user_privileges'], array('enseignant', 'eleve'))) {
+            Router::redirect('Calendar');
+        } elseif ($_SESSION['user_privileges'] == 'superviseur') {
+            Router::redirect('CalendarRequestList');
+        } elseif ($_SESSION['user_privileges'] == 'administrateur') {
+            Router::redirect('BackupList');
+        }
+    }
+    
     public function doLogout() {
         session_destroy();
         Router::redirect('Root');
     }
     
-    function _doCharte() {
+    public function doCharte() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (isset($_POST['validation'])) {
-                $this->dbo->update('update utilisateurs set charte_signee=true where id=' . $_SESSION['user_id']);
+                $user = new UserModel();
+                $user->update($_SESSION['user_id'], array('charte_signee' => 1));
                 $_SESSION['user_charter'] = true;
-                header('Location: index.php');
-                die();
+                $this->defaultRoute();
             }
         }
         $v = new CharteView();

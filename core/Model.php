@@ -2,8 +2,9 @@
 abstract class Model {
 	protected $dbo;
 	
-	function __construct($dbo) {
-		$this->dbo = $dbo;
+	function __construct() {
+		$this->dbo = Configurator::getInstance()->getConnection('schoollog');
+		$this->dbo = $this->dbo->getLink();
 	}
 	
 	abstract function create($props);

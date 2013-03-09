@@ -9,7 +9,7 @@ class ReservationController extends Controller {
 			$arg = '&amp;id_materiel=' . $this->_getArg('id_materiel');
 			
 			/* Récupération de la liste du materiel dans la base */
-			$m = new MaterielModel($this->dbo);
+			$m = new MaterielModel();
 			$materiels = $m->listing();
 			
 			/* Si aucun matériel n'est passé en paramètres, on affiche les informations du premier matériel disponible dans la base */
@@ -21,7 +21,7 @@ class ReservationController extends Controller {
 			}
 			
 			/* Récupération des informations relatives aux réservations de la semaine $week dans la base */
-			$m = new ReservationModel($this->dbo);
+			$m = new ReservationModel();
 			$r = $m->get(array('id_materiel' => $id_materiel, 'week' => $week));
 			$r['id_materiel'] = $id_materiel;
 			$r['_arg'] = $arg;
@@ -35,7 +35,7 @@ class ReservationController extends Controller {
 	/* Fonction pour supprimer une réservation */
 	function _doDelete() {
 		if ($_SESSION['user_privileges'] == 'superviseur' || $_SESSION['user_privileges'] == 'enseignant') {
-			$m = new ReservationModel($this->dbo);
+			$m = new ReservationModel();
 			if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				if (isset($_POST['validation'])) {
 					if ($_SESSION['user_privileges'] == 'superviseur') {
@@ -116,7 +116,7 @@ class ReservationController extends Controller {
 						'id_materiel' 			=> $_POST['id_materiel'],
 						'etat'					=> ($_SESSION['user_privileges'] == 'superviseur' ? 'validée' : '')
 					);
-					$s = new ReservationModel($this->dbo);
+					$s = new ReservationModel();
 					$id = $s->create($parms);
 					if (!empty($id) && $_SESSION['user_privileges'] == 'enseignant') {
 						/* Si un enseignant fait la demande, envoi du mail au superviseur pour confirmation */
@@ -150,11 +150,11 @@ class ReservationController extends Controller {
 			}
 			
 			/* Récupération de la liste du matériel dans la base */
-			$m = new MaterielModel($this->dbo);
+			$m = new MaterielModel();
 			$materiels = $m->listingFonctionnels();
 			
 			/* Récupération de la liste des enseignants dans la base */
-			$m = new UserModel($this->dbo);
+			$m = new UserModel();
 			$enseignants = $m->listingEnseignants();
 			
 			$params = array(
@@ -180,7 +180,7 @@ class ReservationController extends Controller {
 			$m = new Mail();
 			$m->SendMail($_SESSION['user_email'], $infos['email'], 'materiel_reject', $v->show($parms));
 			/* Suppression de la réservation dans la base */
-			$m = new ReservationModel($this->dbo);
+			$m = new ReservationModel();
 			$m->delete($this->_getArg('id'));
 			die();
 		}
@@ -198,7 +198,7 @@ class ReservationController extends Controller {
 			$m = new Mail();
 			$m->SendMail($_SESSION['user_email'], $infos['email'], 'materiel_accept', $v->show($parms));
 			/* Changer l'etat de la réservation dans la base */
-			$m = new ReservationModel($this->dbo);
+			$m = new ReservationModel();
 			$m->update($this->_getArg('id'), array('etat' => 'validée'));
 			die();
 		}

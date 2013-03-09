@@ -4,7 +4,7 @@ class SupportController extends Controller {
     public function doList() {
         if ($_SESSION['user_privileges'] == 'enseignant') {
             // Recherche des différentes classes de l'enseignant
-            $m = new MatieresClasseModel($this->dbo);
+            $m = new MatieresClasseModel();
             $classes = $m->getClassesEnseignant(array('id' => $_SESSION['user_id']));
             foreach ($classes as &$class) {
                 // Recherche des différentes matières de l'enseignant associées à la classe
@@ -87,7 +87,7 @@ class SupportController extends Controller {
             }
         } else if ($_SESSION['user_privileges'] == 'superviseur') {
             // Récupération des différentes classes/matières auxquelles l'élève a accès afin de lui en offrir la liste
-            $m = new ClasseModel($this->dbo);
+            $m = new ClasseModel();
             $classes = $m->listing();
             foreach ($classes as &$c) {
                 $c['matieres'] = $this->dbo->query('select distinct m.id, m.nom from enseignants_matieres_classes e, matieres m where e.id_classe=' . $c['id'] . ' and m.id=e.id_matiere order by nom');
@@ -119,7 +119,7 @@ class SupportController extends Controller {
                 foreach ($classes as &$class) {
                     $class['subjects'] = $this->dbo->query('select emc.id_matiere as id, m.nom from enseignants_matieres_classes emc, matieres m where emc.id_matiere=m.id and emc.id_classe=' . $class['id'] . (!empty($id_matiere) ? ' and emc.id_matiere=' . $id_matiere : '') . ' order by m.nom asc');
                     foreach ($class['subjects'] as &$subject) {
-                        $m = new SupportModel($this->dbo);
+                        $m = new SupportModel();
                         $subject['supports'] = $m->listing($class['id'], $subject['id']);
                     }
                 }
@@ -133,7 +133,7 @@ class SupportController extends Controller {
     public function doDelete($args) {
         $support_id = $args['support_id'];
         if ($_SESSION['user_privileges'] == 'enseignant' || $_SESSION['user_privileges'] == 'superviseur') {
-            $m = new SupportModel($this->dbo);
+            $m = new SupportModel();
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (isset($_POST['validation'])) {
                     /* Suppression du support dans la base */
@@ -205,7 +205,7 @@ class SupportController extends Controller {
                                 'id_matiere'        => $_GET['subject'],
                                 'id_classe'         => $_GET['class']
                             );
-                            $s = new SupportModel($this->dbo);
+                            $s = new SupportModel();
                             $s->create($params);
                         } else {
                             $_SESSION['ERROR_MSG'] = 'Certains paramètres manquent à l\'appel...';
@@ -274,7 +274,7 @@ class SupportController extends Controller {
                                 'id_matiere' => $mp[0],
                                 'id_classe' => $_GET['class']
                             );
-                            $s = new SupportModel($this->dbo);
+                            $s = new SupportModel();
                             $s->create($params);
                         } else {
                             $_SESSION['ERROR_MSG'] = 'Certains paramètres manquent à l\'appel...';
@@ -333,7 +333,7 @@ class SupportController extends Controller {
     public function doEdit($args) {
         $support_id = $args['support_id'];
         if ($_SESSION['user_privileges'] == 'enseignant') {
-            $m = new SupportModel($this->dbo);
+            $m = new SupportModel();
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (isset($_POST['annulation'])) {
                     Router::redirect('SupportList');

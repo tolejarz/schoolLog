@@ -16,10 +16,10 @@ if (empty($parms['classes'])) {
 	foreach ($parms['classes'] as $class) {
 		echo('
 			<tr>
-				<td class="centered"><a href="' . Router::build('ClassDelete', array('class_id' => $class['id'])) . '" target="_self"><img alt="Supprimer" src="templates/img/delete.png" title="Supprimer" /></a> <a href="' . Router::build('ClassEdit', array('class_id' => $class['id'])) . '" target="_self"><img alt="Modifier" src="templates/img/edit.png" title="Modifier" /></a></td>
+				<td class="centered"><a href="' . Router::build('ClassDelete', array('class_id' => $class['id'])) . '" target="_self"><img alt="Supprimer" src="/resource/img/delete.png" title="Supprimer" /></a> <a href="' . Router::build('ClassEdit', array('class_id' => $class['id'])) . '" target="_self"><img alt="Modifier" src="/resource/img/edit.png" title="Modifier" /></a></td>
 				<td class="centered">' . $class['libelle'] . '</td>
 				<td class="centered">' . $class['email'] . '</td>
-				<td class="centered"><a href="' . Router::build('ClassSubjectList', array('class_id' => $class['id'])) . '" target="_self"><img alt="Visualiser" src="templates/img/info.png" title="Visualiser" /></a></td>
+				<td class="centered"><a href="' . Router::build('ClassSubjectList', array('class_id' => $class['id'])) . '" target="_self"><img alt="Visualiser" src="/resource/img/info.png" title="Visualiser" /></a></td>
 			</tr>');
 	}
 	echo('</table>');

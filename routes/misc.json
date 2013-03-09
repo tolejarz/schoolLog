@@ -2,7 +2,7 @@
     "Root":{
         "uri":"",
         "reverse_uri":"",
-        "class":"",
+        "handler":"AuthHandler.login",
         "args":[],
         "method":"get"
     },

@@ -4,7 +4,7 @@ class MaterielController extends Controller {
     public function doList() {
         if ($_SESSION['user_privileges'] == 'superviseur' || $_SESSION['user_privileges'] == 'enseignant') {
             /* Récupération de l'id, du type et du modèle de tous les matériels dans la base */
-            $m = new MaterielModel($this->dbo);
+            $m = new MaterielModel();
             $v = new MaterielDefaultView();
             $v->show(array('equipments' => $m->listing()));
         }
@@ -14,7 +14,7 @@ class MaterielController extends Controller {
     public function doDelete($args) {
         $equipment_id = $args['equipment_id'];
         if ($_SESSION['user_privileges'] == 'superviseur') {
-            $m = new MaterielModel($this->dbo);
+            $m = new MaterielModel();
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (isset($_POST['validation'])) {
                     /*Suppression du matériel dans la base */
@@ -52,7 +52,7 @@ class MaterielController extends Controller {
                 if (!isset($_SESSION['ERROR_MSG'])) {
                     if (isset($_POST['validation'])) {
                         /* S'il n'y a pas d'erreurs, ajout du matériel dans la base */
-                        $m = new MaterielModel($this->dbo);
+                        $m = new MaterielModel();
                         $m->create(array('type' => $_POST['type'], 'modele' => $_POST['modele']));
                     }
                     Router::redirect('EquipmentList');
@@ -68,7 +68,7 @@ class MaterielController extends Controller {
         $equipment_id = $args['equipment_id'];
         if ($_SESSION['user_privileges'] == 'superviseur') {
             /* Récupération des informations associées au matériel dans la base */
-            $m = new MaterielModel($this->dbo);
+            $m = new MaterielModel();
             $r = $m->get(array('id' => $equipment_id));
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (isset($_POST['annulation'])) {

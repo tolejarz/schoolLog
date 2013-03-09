@@ -15,7 +15,10 @@ if (empty($parms['enseignants'])) {
 	foreach ($parms['enseignants'] as $user) {
 		echo('
 			<tr>
-				<td class="centered"><a href="' . Router::build('UserDelete', array('user_id' => $user['id'])) . '" target="_self"><img alt="Supprimer" src="templates/img/delete.png" title="Supprimer" /> <a href="' . Router::build('UserEdit', array('user_id' => $user['id'])) . '" target="_self"><img alt="Editer" src="templates/img/edit.png" title="Editer" /></a></td>
+				<td class="centered">
+					<a href="' . Router::build('UserDelete', array('user_id' => $user['id'])) . '" target="_self"><img alt="Supprimer" src="/resource/img/delete.png" title="Supprimer" />
+					<a href="' . Router::build('UserEdit', array('user_id' => $user['id'])) . '" target="_self"><img alt="Editer" src="/resource/img/edit.png" title="Editer" /></a>
+				</td>
 				<td>' . $user['civility'] . ' ' . $user['nom'] . '</td>
 			</tr>');
 	}
