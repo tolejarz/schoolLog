@@ -1,5 +1,5 @@
 <?php
-class UserModel extends Model {
+class UserModel extends Model_old {
 	function auth($l, $p) {
 		$r = $this->dbo->singleQuery("select id, nom, civility, email, date_format(derniere_connexion, 'le %d/%m/%Y à %Hh%i') as lastlog, charte_signee, droits from utilisateurs where login='" . $l . "'");
 		

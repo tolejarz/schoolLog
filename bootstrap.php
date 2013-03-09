@@ -90,7 +90,7 @@ if (!function_exists('http_build_url')) {
 }
 
 function autoload($classname) {
-    if (in_array($classname, array('Action', 'Controller', 'DBO', 'MySQLiDBO', 'FileManipulation', 'HtmlView', 'View', 'Formatter', 'Handler', 'Model', 'Query', 'Repository', 'RestClient', 'Service', 'Uri'))) {
+    if (in_array($classname, array('Action', 'Controller', 'DBO', 'MySQLiDBO', 'FileManipulation', 'HtmlView', 'View', 'Formatter', 'Handler', 'Model', 'Model_old', 'Query', 'Repository', 'RestClient', 'Service', 'Uri'))) {
         $path = sprintf('core/%s.php', $classname);
         if (is_file($path)) {
             include_once $path;

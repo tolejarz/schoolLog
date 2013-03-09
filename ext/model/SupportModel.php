@@ -1,5 +1,5 @@
 <?php
-class SupportModel extends Model {
+class SupportModel extends Model_old {
 	function create($props) {
 		$parms = array();
 		if (array_key_exists('titre', $props)) {

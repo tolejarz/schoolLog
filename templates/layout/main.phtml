@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title><?php echo $conf['site']['name']; ?></title>
+        <title><?php echo $configuration['site']['name']; ?></title>
         <link rel="stylesheet" type="text/css" href="/resource/css/style.css" />
         <!--<link rel="stylesheet" type="text/css" href="/resource/jquery-ui-1.7.1.custom.css" />-->
         <script type="text/javascript" src="/resource/javascript/jquery-1.3.2.min.js"></script>
@@ -18,7 +18,7 @@
                 Bienvenue <span class="log"><?php echo(($_SESSION['user_privileges'] == 'eleve' ? $_SESSION['user_surname'] : $_SESSION['user_civility']) . ' ' . $_SESSION['user_name']); ?></span> (<a href="<?php echo Router::build('UserLogout'); ?>" target="_self">Déconnexion</a>)<br />
                 <?php if (!empty($_SESSION['user_lastlog'])) : ?>Dernière connexion <span class="log"><?php echo $_SESSION['user_lastlog']; endif; ?></span>
             </div>
-            <div id="headerContainer"><h1><?php echo $conf['site']['name']; ?> <span class="version">2.0 WIP | </span><span class="by">by JeeTee 2013</span></h1></div>
+            <div id="headerContainer"><h1><?php echo $configuration['site']['name']; ?> <span class="version">2.0 WIP | </span><span class="by">by JeeTee 2013</span></h1></div>
             <div id="menuContainer">
                 <ul class="menusList">
                     <!-- menu Emploi du temps -->

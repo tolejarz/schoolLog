@@ -1,5 +1,5 @@
 <?php
-class ReservationModel extends Model {
+class ReservationModel extends Model_old {
 	function create($props) {
 		$parms = array();
 		if (array_key_exists('date_heure_debut', $props)) {

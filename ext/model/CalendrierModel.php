@@ -1,5 +1,5 @@
 <?php
-class CalendrierModel extends Model {
+class CalendrierModel extends Model_old {
 
 	function get($props) {
 		$whereEnseignant = $whereEleve = $whereClasse = '';

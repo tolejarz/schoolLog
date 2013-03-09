@@ -1,5 +1,5 @@
 <?php
-class MatiereModel extends Model {
+class MatiereModel extends Model_old {
 	function create($props) {
 		return $this->dbo->insert('insert into matieres (nom) values("' . $props['nom'] . '");');
 	}

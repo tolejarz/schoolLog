@@ -1,5 +1,5 @@
 <?php
-class MatieresClasseModel extends Model {
+class MatieresClasseModel extends Model_old {
 	function create($props) {
 		$parms = array();
 		if (array_key_exists('id_enseignant', $props)) {

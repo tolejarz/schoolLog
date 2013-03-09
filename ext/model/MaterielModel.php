@@ -1,5 +1,5 @@
 <?php
-class MaterielModel extends Model {
+class MaterielModel extends Model_old {
 	function create($props) {
 		$parms = array();
 		if (array_key_exists('type', $props)) {
