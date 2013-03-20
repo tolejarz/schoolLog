@@ -6,7 +6,7 @@ class SauvegardeDeleteView extends HtmlView {
 			'date'		=> $this->FormatDateUsToFr($viewparms['date']),
 			'heure'		=> $this->FormatTimeUsToFr($viewparms['heure'])
 		);
-		$this->_pushTemplate('templates/SauvegardeDelete.php', $parms);
+		$this->_pushTemplate('templates/backup/delete.phtml', $parms);
 	}
 }
 ?>

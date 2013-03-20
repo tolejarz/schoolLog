@@ -12,7 +12,7 @@ class SauvegardeDefaultView extends HtmlView {
 			);
 		}
 		$parms = array('sauvegardes' => $sauvegardes);
-		$this->_pushTemplate('templates/SauvegardeDefault.php', $parms);
+		$this->_pushTemplate('templates/backup/list.phtml', $parms);
 	}
 }
 ?>

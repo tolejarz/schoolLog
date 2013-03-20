@@ -1,0 +1,24 @@
+<h2>Liste des matières</h2>
+<a class="addLink" href="<?php echo Router::build('SubjectAdd'); ?>" target="_self">Ajouter une matière</a>
+<p class="separator3"></p>
+<?php if (empty($parms['subjects'])) : ?>
+    <p class="notice">Aucune matière</p>
+<?php else : ?>
+    <table class="listingContainerSmall">
+        <tbody>
+            <tr>
+                <th id="actions">Actions</th>
+                <th>Nom</th>
+            </tr>
+            <?php foreach ($parms['subjects'] as $subject) : ?>
+                <tr>
+                    <td class="centered">
+                        <a href="<?php echo Router::build('SubjectDelete', array('subject_id' => $subject['id'])); ?>" target="_self"><img alt="Supprimer" src="/img/delete.png" title="Supprimer" /></a>
+                        <a href="<?php echo Router::build('SubjectEdit', array('subject_id' => $subject['id'])); ?>" target="_self"><img alt="Modifier" src="/img/edit.png" title="Modifier" /></a>
+                    </td>
+                    <td><?php echo $subject['nom']; ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+<?php endif; ?>

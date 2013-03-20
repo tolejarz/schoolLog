@@ -1,0 +1,28 @@
+<h2>Liste des classes</h2>
+<a class="addLink" href="<?php echo Router::build('ClassAdd'); ?>" target="_self">Ajouter une classe</a>
+<p class="separator3"></p>
+<?php if (!empty($parms['classes'])) : ?>
+    <table class="listingContainer">
+        <tr>
+            <th id="actions">Actions</th>
+            <th>Libellé</th>
+            <th>E-mail</th>
+            <th id="actions">Matières</th>
+        </tr>
+        <?php foreach ($parms['classes'] as $class) : ?>
+        <tr>
+            <td class="centered">
+                <a href="<?php echo Router::build('ClassDelete', array('class_id' => $class['id'])); ?>" target="_self"><img alt="Supprimer" src="/img/delete.png" title="Supprimer" /></a>
+                <a href="<?php echo Router::build('ClassEdit', array('class_id' => $class['id'])); ?>" target="_self"><img alt="Modifier" src="/img/edit.png" title="Modifier" /></a>
+            </td>
+            <td class="centered"><?php echo $class['libelle']; ?></td>
+            <td class="centered"><?php echo $class['email']; ?></td>
+            <td class="centered">
+                <a href="<?php echo Router::build('ClassSubjectList', array('class_id' => $class['id'])); ?>" target="_self"><img alt="Visualiser" src="/img/info.png" title="Visualiser" /></a>
+            </td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+<?php else : ?>
+    <p class="notice">Aucune classe</p>
+<?php endif; ?>

@@ -36,7 +36,7 @@ echo('
 echo('
 	<div class="eventConfirmed" style="height: 13px; float: left; margin: 0 5px 0 0; width: 35px;"></div><div class="floatLeft">Cours déplacé</div>
 	<div class="event" style="height: 13px; float: left; margin: 0 5px 0 20px; width: 35px;"></div><div class="floatLeft">Cours normal</div>' . 
-	(in_array($_SESSION['user_privileges'], array('enseignant', 'superviseur')) ? '<div class="eventPending" style="height: 13px; float: left; margin: 0 5px 0 25px; width: 35px;"></div><div class="floatLeft" style="margin-right: 10px;">Report à confirmer</div>' : '') . '
+	(in_array($_SESSION['user']['privileges'], array('enseignant', 'superviseur')) ? '<div class="eventPending" style="height: 13px; float: left; margin: 0 5px 0 25px; width: 35px;"></div><div class="floatLeft" style="margin-right: 10px;">Report à confirmer</div>' : '') . '
 	<p class="separator3"></p>');
 */
 
@@ -48,7 +48,7 @@ echo('
 	<a class="weekLink" href="?page=emploi_du_temps' . $parms['_arg'] . '&week=' . $prevWeekNumber . '" title="Semaine du ' . date('d/m/Y', $prevWeekTimestamp) . '" target="_self">< Semaine ' . $prevWeekNumber . '</a>
 	<div class="eventConfirmed" style="height: 13px; float: left; margin: 0 5px 0 0; width: 35px;"></div><div class="floatLeft">Cours déplacé</div>
 	<div class="event" style="height: 13px; float: left; margin: 0 5px 0 20px; width: 35px;"></div><div class="floatLeft">Cours normal</div>' . 
-	(in_array($_SESSION['user_privileges'], array('enseignant', 'superviseur')) ? '<div class="eventPending" style="height: 13px; float: left; margin: 0 5px 0 25px; width: 35px;"></div><div class="floatLeft" style="margin-right: 10px;">Report à confirmer</div>' : '') . '
+	(in_array($_SESSION['user']['privileges'], array('enseignant', 'superviseur')) ? '<div class="eventPending" style="height: 13px; float: left; margin: 0 5px 0 25px; width: 35px;"></div><div class="floatLeft" style="margin-right: 10px;">Report à confirmer</div>' : '') . '
 	<p class="separator3"></p>');
 
 echo('
@@ -85,19 +85,19 @@ foreach ($parms as $dayname => $cours) {
 				}
 			
 				// Affichage du lien vers les supports
-				if ($_SESSION['user_privileges'] == 'enseignant') {
-					if ($row['id_enseignant'] == $_SESSION['user_id']) {
+				if ($_SESSION['user']['privileges'] == 'enseignant') {
+					if ($row['id_enseignant'] == $_SESSION['user']['id']) {
 						$supportsLink = '<a class="supportsLink" href="?page=supports#' . $row['id_classe'] . '-' . $row['id_matiere'] . '" target="_self" title="Afficher les supports"></a>';
 					}
-				} else if ($_SESSION['user_privileges'] == 'eleve') {
+				} else if ($_SESSION['user']['privileges'] == 'eleve') {
 					$supportsLink = '<a class="supportsLink" href="?page=supports&id_matiere=' . $row['id_matiere'] . '" target="_self" title="Afficher les supports"></a>';
 				} else {
 					$supportsLink = '<a class="supportsLink" href="?page=supports&id_classe=' . $row['id_classe'] . '&id_matiere=' . $row['id_matiere'] . '" target="_self" title="Afficher les supports"></a>';
 				}
 			
 				// Attribution de l'ID qui conditionne le drag 'n drop (le superviseur peut TOUJOURS déplacer un cours. L'enseignant du cours concerné ne peut le déplacer que tant que la demande n'est pas validée)
-				if ((($_SESSION['user_privileges'] == 'enseignant') && ($row['id_enseignant'] == $_SESSION['user_id'])) || ($_SESSION['user_privileges'] == 'superviseur')) {
-					if (!$parms['_blockDnD'] && !(($row['id_enseignant'] == $_SESSION['user_id']) && ($row['etat'] == 'validée'))) {
+				if ((($_SESSION['user']['privileges'] == 'enseignant') && ($row['id_enseignant'] == $_SESSION['user']['id'])) || ($_SESSION['user']['privileges'] == 'superviseur')) {
+					if (!$parms['_blockDnD'] && !(($row['id_enseignant'] == $_SESSION['user']['id']) && ($row['etat'] == 'validée'))) {
 						$id = 'id="' . $row['id'] . (isset($row['id_operation']) ? '-' . $row['id_operation'] : '') . ':' . $row['jour'] . ':' . implode('-', $daysWeek) . '" ';
 					}
 				}
@@ -106,7 +106,7 @@ foreach ($parms as $dayname => $cours) {
 				if (!empty($row['new'])) {
 					if ($row['etat'] == 'en attente') {
 						$cssClass = 'Pending';
-						if ($_SESSION['user_privileges'] == 'superviseur') {
+						if ($_SESSION['user']['privileges'] == 'superviseur') {
 							$acceptRejectLink = '<a class="acceptRefuseReportLink" rel="' . $row['id_operation'] . '" href="#" title="Valider ou refuser le report"></a>';
 						}
 					} else if ($row['etat'] == 'validée') {
@@ -196,7 +196,7 @@ for ($h = 8; $h <= 20; $h++) {
 					echo('
 						<td rowspan="' . $days[$dayname] . '" style="height: ' . (22 * $days[$dayname] - 2) . 'px">
 							<div style="height: ' . (22 * $days[$dayname] - 7) . 'px"><div class="subject' . (isset($row['new']) ? 'New' : (isset($row['old']) ? 'Old' : '')) . '"><p class="hourLabel">' . $row['heure_debut'] . ' - ' . $row['heure_fin'] . '</p><p class="subjectLabel">' . $row['matiere'] . '</p>');
-							if ((in_array('enseignant', $_SESSION['user_privileges']) && empty($_GET['action'])) || (in_array('superviseur', $_SESSION['user_privileges']) && $_GET['action']=="voir_enseignants")) echo('<p class="subjectLabel">' . $row['classe'] . '</p>');
+							if ((in_array('enseignant', $_SESSION['user']['privileges']) && empty($_GET['action'])) || (in_array('superviseur', $_SESSION['user']['privileges']) && $_GET['action']=="voir_enseignants")) echo('<p class="subjectLabel">' . $row['classe'] . '</p>');
 							echo('' . $extra . '</div></div>
 						</td>');
 				} else if ($days[$dayname] == 0) {

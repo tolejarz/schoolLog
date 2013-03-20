@@ -1,0 +1,21 @@
+<div class="selectionBox">
+    <form method="post" action="">
+    <p class="headerSelectionBox">Veuillez saisir les informations relatives au matériel.</p>
+        <table class="searchContainer">
+            <tbody>
+                <tr>
+                    <th>Type de matériel :</th>
+                    <td><input name="type" type="text" value="<?php echo @$_POST['type']; ?>" /></td>
+                </tr>
+                <tr>
+                    <th>Modèle :</th>
+                    <td><input name="modele" type="text" value="<?php echo @$_POST['modele']; ?>" /></td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="submitContainer">
+            <input name="validation" type="submit" value="Ajouter" />
+            <input name="annulation" type="submit" value="Annuler" />
+        </p>
+    </form>
+</div>

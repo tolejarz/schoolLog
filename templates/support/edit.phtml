@@ -1,0 +1,33 @@
+<div class="selectionBox">
+    <form action="index.php?page=supports&amp;action=edit&amp;id=' . $parms["id"] . '" method="post">
+        <input name="nom_fichier" type="hidden" value="' . $parms['nom_fichier'] . '" />
+        <p class="headerSelectionBox">Veuillez modifier les informations relatives au support.</p>
+        <table class="searchContainer">
+            <tr>
+                <th>Matière/Classe :</th>
+                <td>
+                    <select name="id_classe_id_matiere">');
+<?php foreach ($parms["classes"] as $c) : ?>
+    <optgroup label="<?php echo $c['libelle']; ?>">
+    <?php foreach ($c["subjects"] as $s) : ?>
+        <option <?php echo ($c['libelle'] == $parms['classe'] && $s['nom'] == $parms['matiere'] ? 'selected="selected" ' : ''); ?>value="<?php echo $c['id']; ?>;<?php echo $s['id']; ?>"><?php echo $s['nom']; ?></option>
+    <?php endforeach; ?>
+    </optgroup>
+<?php endforeach; ?>
+                </td>
+            </tr>
+            <tr>
+                <th>Titre :</th>
+                <td><input name="titre" type="text" value="' . $parms['titre'] . '" /></td>
+            </tr>
+            <tr>
+                <th>Mots-clés :</th>
+                <td><input name="tags" type="text" value="' . $parms['tags'] . '" /> (séparés par des ";")</td>
+            </tr>
+        </table>
+        <p class="submitContainer">
+            <input name="validation" type="submit" value="Valider" />
+            <input name="annulation" type="submit" value="Annuler" />
+        </p>
+    </form>
+</div>

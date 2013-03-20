@@ -1,6 +1,6 @@
 /* core */
 body {
-	background: white url("/resource/img/background.png") repeat-x scroll left top;
+	background: white url("/img/background.png") repeat-x scroll left top;
 	font-family: arial, helvetica, sans-serif;
 	font-size: 10pt;
 }
@@ -94,7 +94,7 @@ p.notice {
 
 /* error */
 div.errorContainer {
-	background: #f6dae5 url("/resource/img/error.png") no-repeat scroll 15px center;
+	background: #f6dae5 url("/img/error.png") no-repeat scroll 15px center;
 	border: 2px solid #eeb6cc;
 	color: #e03030;
 	margin-bottom: 15px;
@@ -106,7 +106,7 @@ div.errorContainer {
 
 /* info */
 div.infoContainer {
-	background: #cdf6da url("/resource/img/info.png") no-repeat scroll 15px center;
+	background: #cdf6da url("/img/info.png") no-repeat scroll 15px center;
 	border: 2px solid #76bf8c;
 	color: #4a9b62;
 	margin-bottom: 15px;
@@ -122,7 +122,7 @@ div#globalContainer {
 }
 
 div#headerContainer {
-	background: transparent url("/resource/img/bidon.png") no-repeat scroll 40px 5px;
+	background: transparent url("/img/bidon.png") no-repeat scroll 40px 5px;
 	height: 80px;
 	margin: 0 0 40px 0;
 	padding: 3px 0 0 210px;
@@ -187,12 +187,12 @@ ul.subMenusList li {
 }
 
 ul.subMenusList li a {
-	background: transparent url("/resource/img/bullet.png") no-repeat scroll left center;
+	background: transparent url("/img/bullet.png") no-repeat scroll left center;
 	padding-left: 16px;
 }
 
 ul.subMenusList li a:hover {
-	background: transparent url("/resource/img/bulletHover.png") no-repeat scroll left center;
+	background: transparent url("/img/bulletHover.png") no-repeat scroll left center;
 	color: #4e99bb;
 }
 
@@ -302,7 +302,7 @@ input[type=text]:focus, input[type=password]:focus {
 
 /* supports */
 a.downloadLink {
-	background: transparent url("/resource/img/download.png") no-repeat scroll left center;
+	background: transparent url("/img/download.png") no-repeat scroll left center;
 	padding-left: 24px;
 	text-decoration: none;
 }
@@ -331,7 +331,7 @@ table.listingContainerSmall {
 }
 
 table.listingContainer th, table.listingContainerSmall th {
-	background: #cae8ea url(/resource/img/bg_header.jpg) no-repeat;
+	background: #cae8ea url(/img/bg_header.jpg) no-repeat;
 	color: #4f6b72;
 	font: bold 11px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	border-bottom: 1px solid #c1dad7;
@@ -421,7 +421,7 @@ table.listingContainer td.refused {
 
 
 a.addLink {
-	background: transparent url("/resource/img/add.png") no-repeat scroll left center;
+	background: transparent url("/img/add.png") no-repeat scroll left center;
 	color: green;
 	float: right;
 	font-size: 10pt;
@@ -429,7 +429,7 @@ a.addLink {
 }
 
 a.historyLink {
-	background: transparent url("/resource/img/history.png") no-repeat scroll left center;
+	background: transparent url("/img/history.png") no-repeat scroll left center;
 	color: blue;
 	float: left;
 	font-size: 10pt;
@@ -535,7 +535,7 @@ p.reportLabel {
 }
 
 .supportsLink {
-	background: transparent url("/resource/img/support.png") no-repeat scroll top left;
+	background: transparent url("/img/support.png") no-repeat scroll top left;
 	float: right;
 	height: 10px;
 	margin: 5px 5px 0 0;
@@ -543,7 +543,7 @@ p.reportLabel {
 }
 
 .deleteLink {
-	background: transparent url("/resource/img/delete.png") no-repeat scroll top left;
+	background: transparent url("/img/delete.png") no-repeat scroll top left;
 	float: right;
 	height: 10px;
 	margin: 5px 5px 0 0;
@@ -551,19 +551,19 @@ p.reportLabel {
 }
 
 .acceptReservationLink, .acceptReportLink {
-	background: transparent url("/resource/img/accept.png") no-repeat scroll left center;
+	background: transparent url("/img/accept.png") no-repeat scroll left center;
 	padding-left: 16px;
 	margin: 5px 25px;
 }
 
 .refuseReservationLink, .refuseReportLink {
-	background: transparent url("/resource/img/refuse.png") no-repeat scroll left center;
+	background: transparent url("/img/refuse.png") no-repeat scroll left center;
 	padding-left: 16px;
 	margin: 5px 25px;
 }
 
 .acceptRefuseReservationLink, .acceptRefuseReportLink {
-	background: transparent url("/resource/img/action.png") no-repeat scroll top left;
+	background: transparent url("/img/action.png") no-repeat scroll top left;
 	float: right;
 	height: 10px;
 	margin: 5px 5px 0 0;
@@ -571,7 +571,7 @@ p.reportLabel {
 }
 
 .moveableTip {
-	background: transparent url("/resource/img/moveable.png") no-repeat scroll top left;
+	background: transparent url("/img/moveable.png") no-repeat scroll top left;
 	cursor: move;
 	float: right;
 	height: 10px;

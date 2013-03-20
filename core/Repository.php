@@ -6,7 +6,7 @@ abstract class Repository {
     protected $fields = null;
     
     public function __construct() {
-        $this->link = Configurator::getInstance()->getConnection('campaign');
+        $this->link = Configurator::getInstance()->getConnection('schoollog');
         foreach ($this->fields as $field_name => $field_description) {
             if (!empty($field_description['primary'])) {
                 $this->primary_key = $field_name;

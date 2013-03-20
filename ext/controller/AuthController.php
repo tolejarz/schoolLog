@@ -1,7 +1,8 @@
 <?php
+// No SQL!!! :)
 class AuthController extends Controller {
     public function doLogin() {
-        if (!empty($_SESSION['user_id'])) {
+        if (!empty($_SESSION['user']['id'])) {
             $this->defaultRoute();
         }
         
@@ -11,35 +12,31 @@ class AuthController extends Controller {
             } elseif (empty($_POST['password'])) {
                 $_SESSION['ERROR_MSG'] = 'Veuillez remplir le champ <b>Mot de passe</b>';
             } else {
-                $u = new UserModel();
-                $login = trim($_POST['login']);
-                $pass = $_POST['password'];
+                $user = new UserModel();
                 //$r = $u->ldapAuth($login, $pass);
-                $r = $u->auth($login, $pass);
-                if ($r == 'BAD_LOGIN_MDP') {
+                $r = $user->auth(trim($_POST['login']), $_POST['password']);
+                if (!$r) {
                     $_SESSION['ERROR_MSG'] = '<b>Login</b> ou <b>Mot de passe</b> incorrect';
-                } elseif ($r == 'CONNECTION_FAILED') {
-                    $_SESSION['ERROR_MSG'] = '<b>Connexion échouée</b>';
-                } elseif (!empty($r['auth'])) {
-                    $_SESSION['user_id']                    = $r['user_id'];
-                    $_SESSION['user_login']                 = $r['user_login'];
-                    $_SESSION['user_civility']              = $r['user_civility'];
-                    $_SESSION['user_surname']               = $r['user_surname'];
-                    $_SESSION['user_name']                  = $r['user_name'];
-                    $_SESSION['user_email']                 = $r['user_email'];
-                    $_SESSION['user_lastlog']               = $r['user_lastlog'];
-                    $_SESSION['user_class']                 = $r['user_class'];
-                    $_SESSION['user_classes_subjects']      = $r['user_classes_subjects'];
-                    $_SESSION['user_privileges']            = $r['user_privileges'];
-                    $_SESSION['user_lastlog']               = $r['user_lastlog'];
-                    $_SESSION['user_charter']               = $r['user_charter'];
-                    
+                } else {
+                    $_SESSION['user'] = array(
+                        'id'                => $user->id,
+                        'login'             => $user->login,
+                        'civility'          => $user->civility,
+                        'surname'           => $user->nom,
+                        'name'              => $user->nom,
+                        'email'             => $user->email,
+                        'lastlog'           => $user->derniere_connexion,
+                        'class'             => $r['user_class'],
+                        'classes_subjects'  => $r['user_classes_subjects'],
+                        'privileges'        => $user->droits,
+                        'charter'           => $user->charte_signee,
+                    );
                     $this->defaultRoute();
                 }
             }
         } else {
             if(isset($_GET["redir"])){
-                header("Location: ". SITE_DIR ."index.php?numero=".$_GET["numero"]);
+                header("Location: index.php?numero=".$_GET["numero"]);
                 die();
             }
             if(!empty($_GET["numero"]) && $_GET["numero"]=="403"){
@@ -54,11 +51,11 @@ class AuthController extends Controller {
     }
     
     private function defaultRoute() {
-        if (in_array($_SESSION['user_privileges'], array('enseignant', 'eleve'))) {
+        if (in_array($_SESSION['user']['privileges'], array('enseignant', 'eleve'))) {
             Router::redirect('Calendar');
-        } elseif ($_SESSION['user_privileges'] == 'superviseur') {
+        } elseif ($_SESSION['user']['privileges'] == 'superviseur') {
             Router::redirect('CalendarRequestList');
-        } elseif ($_SESSION['user_privileges'] == 'administrateur') {
+        } elseif ($_SESSION['user']['privileges'] == 'administrateur') {
             Router::redirect('BackupList');
         }
     }
@@ -72,8 +69,11 @@ class AuthController extends Controller {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (isset($_POST['validation'])) {
                 $user = new UserModel();
-                $user->update($_SESSION['user_id'], array('charte_signee' => 1));
-                $_SESSION['user_charter'] = true;
+                $user->get($_SESSION['user']['id']);
+                $user->charte_signee = true;
+                $user->save();
+                
+                $_SESSION['user']['charter'] = true;
                 $this->defaultRoute();
             }
         }

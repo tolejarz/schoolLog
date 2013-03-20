@@ -31,7 +31,7 @@ $days = array('lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi');
 echo('
 	<select class="subject_id" style="display: none;">');
 foreach ($parms['matieres'] as $matiere) {
-	echo('<option value="' . $matiere['id'] . '">' . $matiere['nom'] . '</option>');
+	echo('<option value="' . $matiere['id_matiere'] . '">' . $matiere['nom_matiere'] . '</option>');
 }
 echo('
 	</select>
@@ -41,7 +41,7 @@ echo('
 echo('
 	<select class="subject_id" style="display: none;">');
 foreach ($parms['matieres'] as $matiere) {
-	echo('<option value="' . $matiere['id'] . '">' . $matiere['nom'] . '</option>');
+	echo('<option value="' . $matiere['id_matiere'] . '">' . $matiere['nom_matiere'] . '</option>');
 }
 echo('
 	</select>
@@ -77,7 +77,7 @@ foreach ($parms['cours'] as $cours) {
 				<p class="hourLabel">' . $cours['heure_debut'] . ' - ' . $cours['heure_fin'] . '</p>
 				<select class="subject_id">');
 		foreach ($parms['matieres'] as $matiere) {
-			echo('<option ' . ($matiere['id'] == $cours['id_matiere'] ? 'selected="selected" ' : '') . 'value="' . $matiere['id'] . '">' . $matiere['nom'] . '</option>');
+			echo('<option ' . ($matiere['id_matiere'] == $cours['id_matiere'] ? 'selected="selected" ' : '') . 'value="' . $matiere['id_matiere'] . '">' . $matiere['nom_matiere'] . '</option>');
 		}
 		echo('</select>
 				<input name="event' . $i++ . '" type="hidden" value="' . $id . '" />

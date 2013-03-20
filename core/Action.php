@@ -10,7 +10,6 @@ class Action {
      * @param array $settings Application settings (to pass to Handler)
      */
     public function perform($configuration) {
-        require_once('lib/epsilib.php');
         require_once('config.php');
         
         $dbo = new MySQLiDBO(

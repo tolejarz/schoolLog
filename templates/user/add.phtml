@@ -1,0 +1,44 @@
+<div class="selectionBox">
+    <form action="" method="post">
+        <p class="headerSelectionBox">Veuillez saisir les informations relatives à l'enseignant.</p>
+        <table class="searchContainer">
+            <tr>
+                <th>Civilité :</th>
+                <td>
+                    <select name="civility">
+                        <option <?php echo (@$_POST['civility'] == 'M.' ? 'selected="selected" ' : ''); ?>value="M.">M.</option>
+                        <option <?php echo (@$_POST['civility'] == 'Mme' ? 'selected="selected" ' : ''); ?>value="Mme">Mme</option>
+                        <option <?php echo (@$_POST['civility'] == 'Mlle' ? 'selected="selected" ' : ''); ?>value="Mlle">Mlle</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>Nom :</th>
+                <td><input name="nom" type="text" value="<?php echo @$_POST['nom']; ?>" /></td>
+            </tr>
+        </table>
+        <table id="classesTable">
+            <tbody>
+                <?php foreach ($parms['classes'] as $c) : ?>
+                <tr>
+                    <td class="top">
+                        <p class="classesTableHeader"><?php echo $c['libelle']; ?></p>
+                        <?php if (empty($c['matieres'])) : ?>
+                        <p class="notice">Aucune matière</p>
+                        <?php else : ?>
+                        <?php foreach ($c['matieres'] as $m) : ?>
+                        <p class="thinParagraph"><input <?php
+                        echo @in_array($_POST['emc'][$c['id']], $m['id_matiere']) ? 'checked="checked" ' : '' ?>name="emc[<?php echo $c['id']; ?>][]" type="checkbox" /> <label for=""><?php echo $m['nom_matiere']; ?></label></p>
+                        <?php endforeach; ?>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+        <p class="submitContainer">
+            <input name="validation" type="submit" value="Ajouter" />
+            <input name="annulation" type="submit" value="Annuler" />
+        </p>
+    </form>
+</div>

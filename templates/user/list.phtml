@@ -1,0 +1,22 @@
+<h2>Liste des enseignants</h2>
+<a class="addLink" href="<?php echo Router::build('UserAdd'); ?>" target="_self">Ajouter un enseignant</a>
+<p class="separator3"></p>
+<?php if (empty($parms['enseignants'])) : ?>
+    <p class="notice">Aucun enseignant</p>
+<?php else : ?>
+    <table class="listingContainerSmall">
+        <tr>
+            <th id="actions">Actions</th>
+            <th>Enseignant(s)</th>
+        </tr>
+    <?php foreach ($parms['enseignants'] as $user) : ?>
+        <tr>
+            <td class="centered">
+                <a href="<?php echo Router::build('UserDelete', array('user_id' => $user['id'])); ?>" target="_self"><img alt="Supprimer" src="/img/delete.png" title="Supprimer" /></a>
+                <a href="<?php echo Router::build('UserEdit', array('user_id' => $user['id'])); ?>" target="_self"><img alt="Editer" src="/img/edit.png" title="Editer" /></a>
+            </td>
+            <td><?php echo $user['civility']; ?> <?php echo $user['nom']; ?></td>
+        </tr>
+    <?php endforeach; ?>
+    </table>
+<?php endif; ?>

@@ -3,35 +3,35 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title><?php echo $configuration['site']['name']; ?></title>
-        <link rel="stylesheet" type="text/css" href="/resource/css/style.css" />
-        <!--<link rel="stylesheet" type="text/css" href="/resource/jquery-ui-1.7.1.custom.css" />-->
-        <script type="text/javascript" src="/resource/javascript/jquery-1.3.2.min.js"></script>
-        <script type="text/javascript" src="/resource/javascript/ui.datepicker-fr.js"></script>
-        <script type="text/javascript" src="/resource/javascript/jquery-ui-1.7.1.custom.min.js"></script>
-        <script type="text/javascript" src="/resource/javascript/global.js"></script>
-        <script type="text/javascript" src="/resource/javascript/progress.js"></script>
+        <link rel="stylesheet" type="text/css" href="/css/style.css" />
+        <!--<link rel="stylesheet" type="text/css" href="/jquery-ui-1.7.1.custom.css" />-->
+        <script type="text/javascript" src="/javascript/jquery-1.3.2.min.js"></script>
+        <script type="text/javascript" src="/javascript/ui.datepicker-fr.js"></script>
+        <script type="text/javascript" src="/javascript/jquery-ui-1.7.1.custom.min.js"></script>
+        <script type="text/javascript" src="/javascript/global.js"></script>
+        <script type="text/javascript" src="/javascript/progress.js"></script>
         <link href="/favicon.ico" rel="icon" type="image/x-icon" />
     </head>
     <body>
         <div id="globalContainer">
             <div id="logContainer">
-                Bienvenue <span class="log"><?php echo(($_SESSION['user_privileges'] == 'eleve' ? $_SESSION['user_surname'] : $_SESSION['user_civility']) . ' ' . $_SESSION['user_name']); ?></span> (<a href="<?php echo Router::build('UserLogout'); ?>" target="_self">Déconnexion</a>)<br />
-                <?php if (!empty($_SESSION['user_lastlog'])) : ?>Dernière connexion <span class="log"><?php echo $_SESSION['user_lastlog']; endif; ?></span>
+                Bienvenue <span class="log"><?php echo(($_SESSION['user']['privileges'] == 'eleve' ? $_SESSION['user']['surname'] : $_SESSION['user']['civility']) . ' ' . $_SESSION['user']['name']); ?></span> (<a href="<?php echo Router::build('UserLogout'); ?>" target="_self">Déconnexion</a>)<br />
+                <?php if (!empty($_SESSION['user']['lastlog'])) : ?>Dernière connexion <span class="log"><?php echo $_SESSION['user']['lastlog']; endif; ?></span>
             </div>
             <div id="headerContainer"><h1><?php echo $configuration['site']['name']; ?> <span class="version">2.0 WIP | </span><span class="by">by JeeTee 2013</span></h1></div>
             <div id="menuContainer">
                 <ul class="menusList">
                     <!-- menu Emploi du temps -->
-                    <?php if ($_SESSION['user_privileges'] != 'administrateur') : ?>
+                    <?php if ($_SESSION['user']['privileges'] != 'administrateur') : ?>
                         <li>Emploi du temps
                             <ul class="subMenusList">
-                            <?php if ($_SESSION['user_privileges'] == 'eleve') : ?>
+                            <?php if ($_SESSION['user']['privileges'] == 'eleve') : ?>
                                 <li><a href="<?php echo Router::build('Calendar'); ?>" target="_self">Consulter</a></li>
-                            <?php elseif ($_SESSION['user_privileges'] == 'enseignant') : ?>
+                            <?php elseif ($_SESSION['user']['privileges'] == 'enseignant') : ?>
                                 <li><a href="<?php echo Router::build('Calendar'); ?>" target="_self">Votre emploi du temps</a></li>
                                 <li><a href="<?php echo Router::build('CalendarClass'); ?>" target="_self">Classes</a></li>
                                 <li><a href="<?php echo Router::build('CalendarRequestList'); ?>" target="_self">Demandes de report</a></li>
-                            <?php elseif ($_SESSION['user_privileges'] == 'superviseur') : ?>
+                            <?php elseif ($_SESSION['user']['privileges'] == 'superviseur') : ?>
                                 <li><a href="<?php echo Router::build('CalendarTeacher'); ?>" target="_self">Enseignants</a></li>
                                 <li><a href="<?php echo Router::build('CalendarClass'); ?>" target="_self">Classes</a></li>
                                 <li><a href="<?php echo Router::build('CalendarRequestList'); ?>" target="_self">Demandes de modification</a></li>
@@ -42,7 +42,7 @@
                     <?php endif; ?>
                     
                     <!-- menu Matériels -->
-                    <?php if (in_array($_SESSION['user_privileges'], array('superviseur', 'enseignant'))) : ?>
+                    <?php if (in_array($_SESSION['user']['privileges'], array('superviseur', 'enseignant'))) : ?>
                         <li>Matériels<ul class="subMenusList">
                             <li><a href="<?php echo Router::build('EquipmentList'); ?>" target="_self">Liste du matériel</a></li>
                             <li><a href="<?php echo Router::build('BookingList'); ?>" target="_self">Consulter les réservations</a></li>
@@ -50,12 +50,12 @@
                     <?php endif; ?>
                     
                     <!-- menu Supports de cours -->
-                    <?php if ($_SESSION['user_privileges'] != 'administrateur') : ?>
+                    <?php if ($_SESSION['user']['privileges'] != 'administrateur') : ?>
                         <li>Supports de cours
                             <ul class="subMenusList">
-                            <?php if ($_SESSION['user_privileges'] == 'eleve') : ?>
+                            <?php if ($_SESSION['user']['privileges'] == 'eleve') : ?>
                                 <li><a href="<?php echo Router::build('SupportList'); ?>" target="_self">Rechercher</a></li>
-                            <?php elseif ($_SESSION['user_privileges'] == 'enseignant' || $_SESSION['user_privileges'] == 'superviseur') : ?>
+                            <?php elseif ($_SESSION['user']['privileges'] == 'enseignant' || $_SESSION['user']['privileges'] == 'superviseur') : ?>
                                 <li><a href="<?php echo Router::build('SupportList'); ?>" target="_self">Ajouter/Consulter</a></li>
                             <?php endif; ?>
                             </ul>
@@ -63,14 +63,14 @@
                     <?php endif; ?>
                     
                     <!-- Menu Administration -->
-                    <?php if (in_array($_SESSION['user_privileges'], array('superviseur', 'administrateur'))) : ?>
+                    <?php if (in_array($_SESSION['user']['privileges'], array('superviseur', 'administrateur'))) : ?>
                         <li>Administration
                             <ul class="subMenusList">
-                            <?php if ($_SESSION['user_privileges'] == 'superviseur') : ?>
+                            <?php if ($_SESSION['user']['privileges'] == 'superviseur') : ?>
                                 <li><a href="<?php echo Router::build('ClassList'); ?>" target="_self">Liste des classes</a></li>
                                 <li><a href="<?php echo Router::build('UserList'); ?>" target="_self">Liste des enseignants</a></li>
                                 <li><a href="<?php echo Router::build('SubjectList'); ?>" target="_self">Liste des matières</a></li>
-                            <?php elseif ($_SESSION['user_privileges'] == 'administrateur') : ?>
+                            <?php elseif ($_SESSION['user']['privileges'] == 'administrateur') : ?>
                                 <li><a href="<?php echo Router::build('UserList'); ?>" target="_self">Liste des enseignants</a></li>
                                 <li><a href="<?php echo Router::build('BackupList'); ?>" target="_self">Sauvegardes bdd</a></li>
                             <?php endif; ?>

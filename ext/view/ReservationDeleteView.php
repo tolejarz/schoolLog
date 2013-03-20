@@ -10,7 +10,7 @@ class ReservationDeleteView extends HtmlView {
 			'materiel' 				=> $viewparms['materiel'],
 			'id_materiel' 			=> $viewparms['id_materiel']
 		);
-		$this->_pushTemplate('templates/ReservationDelete.php', $parms);
+		$this->_pushTemplate('templates/booking/delete.phtml', $parms);
 	}
 }
 ?>

@@ -9,12 +9,12 @@ class CalendrierController extends Controller {
         $end = $dates[4];
         
         $r = array();
-        if ($_SESSION['user_privileges'] == 'eleve') {
+        if ($_SESSION['user']['privileges'] == 'eleve') {
             $m = new CalendrierModel();
-            $r['jours'] = $m->get(array('id_eleve' => $_SESSION['user_id'], 'start' => $start, 'end' => $end,  'viewer_type' => $_SESSION['user_privileges']));
-        } else if ($_SESSION['user_privileges'] == 'enseignant') {
+            $r['jours'] = $m->search(array('id_eleve' => $_SESSION['user']['id'], 'start' => $start, 'end' => $end,  'viewer_type' => $_SESSION['user']['privileges']));
+        } else if ($_SESSION['user']['privileges'] == 'enseignant') {
             $m = new CalendrierModel();
-            $r['jours'] = $m->get(array('id_enseignant' => $_SESSION['user_id'], 'start' => $start, 'end' => $end, 'viewer_type' => $_SESSION['user_privileges']));
+            $r['jours'] = $m->search(array('id_enseignant' => $_SESSION['user']['id'], 'start' => $start, 'end' => $end, 'viewer_type' => $_SESSION['user']['privileges']));
             $r['_displayClasses'] = true;
             $r['_blockDnD'] = true;
         }
@@ -25,14 +25,15 @@ class CalendrierController extends Controller {
     }
     
     public function doClass() {
-        if (in_array($_SESSION['user_privileges'], array('enseignant', 'superviseur'))) {
+        if (in_array($_SESSION['user']['privileges'], array('enseignant', 'superviseur'))) {
             /* récupérations des classes */
-            $classes = $this->dbo->query('select * from classes order by libelle asc');
+            $class = new ClasseModel();
+            $classes = $class->search(array(), array('orderby' => 'libelle', 'orderby_dir' => 'asc'));
             
             /* on récupère l'id de la classe à afficher. S'il n'existe pas, on affiche par défaut la première classe existante */
             $id_classe = $this->_getArg('id_classe');
             if (empty($id_classe) && !empty($classes)) {
-                $id_classe = $classes[0]['id'];
+                $id_classe = current($classes)['id'];
             }
             
             $v = new CalendrierClassesSelectView();
@@ -49,7 +50,7 @@ class CalendrierController extends Controller {
                 
                 $r = array();
                 $m = new CalendrierModel();
-                $r['jours'] = $m->get(array('id_classe' => $id_classe, 'start' => $start, 'end' => $end, 'viewer_type' => $_SESSION['user_privileges']));
+                $r['jours'] = $m->search(array('id_classe' => $id_classe, 'start' => $start, 'end' => $end, 'viewer_type' => $_SESSION['user']['privileges']));
                 $r['_arg'] = '&amp;action=' . $this->_getArg('action') . '&amp;id_classe=' . $this->_getArg('id_classe');
                 $r['_week'] = $week;
                 $v = new CalendrierDefaultView();
@@ -59,7 +60,7 @@ class CalendrierController extends Controller {
     }
     
     public function doTeacher() {
-        if (in_array($_SESSION['user_privileges'], array('enseignant', 'superviseur'))) {
+        if (in_array($_SESSION['user']['privileges'], array('enseignant', 'superviseur'))) {
             $week = $this->_getArg('week');
             $week = !empty($week) ? $week : (date('w') % 6 == 0 ? date('W') + 1 : date('W'));
             
@@ -68,12 +69,12 @@ class CalendrierController extends Controller {
             $end = $dates[4];
             
             /* Récupération de la liste des enseignants dans la base */
-            $m = new UserModel();
-            $enseignants = $m->listingEnseignants();
+            $user = new UserModel();
+            $enseignants = $user->search(array('droits find' => 'enseignant'));
             
             $id_enseignant = $this->_getArg('id_enseignant');
             if (empty($id_enseignant)) {
-                $id_enseignant = $enseignants[0]['id'];
+                $id_enseignant = current($enseignants)['id'];
             }
             
             $v = new CalendrierEnseignantsSelectView();
@@ -81,7 +82,7 @@ class CalendrierController extends Controller {
             
             if (!empty($id_enseignant)) {
                 $m = new CalendrierModel();
-                $r['jours'] = $m->get(array('id_enseignant' => $id_enseignant, 'start' => $start, 'end' => $end, 'viewer_type' => $_SESSION['user_privileges']));
+                $r['jours'] = $m->search(array('id_enseignant' => $id_enseignant, 'start' => $start, 'end' => $end, 'viewer_type' => $_SESSION['user']['privileges']));
                 $r['_arg'] = '&amp;action=' . $this->_getArg('action') . '&amp;id_enseignant=' . $this->_getArg('id_enseignant');
                 $r['_week'] = $week;
                 $r['_displayClasses'] = true;
@@ -92,7 +93,7 @@ class CalendrierController extends Controller {
     }
     
     public function doRequestAdd() {
-        if (in_array($_SESSION['user_privileges'], array('enseignant', 'superviseur'))) {
+        if (in_array($_SESSION['user']['privileges'], array('enseignant', 'superviseur'))) {
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 /* si l'utilisateur n'a pas cliqué sur Validation alors on annule et redirige */
                 if (!isset($_POST['validation'])) {
@@ -107,9 +108,9 @@ class CalendrierController extends Controller {
                     $heure_report = trim(sprintf('%02d:%02d', $_POST['heure_report_h'], $_POST['heure_report_m']));
                 }
                 
-                $date_origine_timestamp = mktime(0, 0, 0, substr($_POST['date_origine'], 3, 2),  substr($_POST['date_origine'], 0, 2), substr($_POST['date_origine'], 6, 4));
+                $date_origine_timestamp = mktime(0, 0, 0, substr($_POST['date_origine'], 3, 2), substr($_POST['date_origine'], 0, 2), substr($_POST['date_origine'], 6, 4));
                 if ($_POST['hasDateReport'] == 'yes') {
-                    $date_report_timestamp = mktime(0, 0, 0, substr($_POST['date_report'], 3, 2),  substr($_POST['date_report'], 0, 2), substr($_POST['date_report'], 6, 4));
+                    $date_report_timestamp = mktime(0, 0, 0, substr($_POST['date_report'], 3, 2), substr($_POST['date_report'], 0, 2), substr($_POST['date_report'], 6, 4));
                 }
                 
                 /* tests d'erreurs */
@@ -130,8 +131,8 @@ class CalendrierController extends Controller {
                         'date_origine'      => $this->FormatDateTimeFrToUs(trim($_POST['date_origine']), false),
                         'heure_origine'     => $this->FormatTimeFrToUs($heure_origine)
                     );
-                    if ($_SESSION['user_privileges'] == 'enseignant') {
-                        $parms['id_enseignant'] = $_SESSION['user_id'];
+                    if ($_SESSION['user']['privileges'] == 'enseignant') {
+                        $parms['id_enseignant'] = $_SESSION['user']['id'];
                     }
                     $id_cours = $m->getCours($parms);
                     
@@ -171,16 +172,17 @@ class CalendrierController extends Controller {
                             $parms = array(
                                 'date_origine'              => $this->FormatDateTimeFrToUs(trim($_POST['date_origine']), false),
                                 'date_report'               => $this->FormatDateTimeFrToUs($_POST['date_report'] . ' ' . $heure_report),
-                                'id_enseignant'             => in_array('enseignant', $_SESSION['user_privileges']) ? $_SESSION['user_id'] : $this->dbo->sqleval('select id_enseignant from modele_planning where id=' . $id_cours),
+                                'id_enseignant'             => in_array('enseignant', $_SESSION['user']['privileges']) ? $_SESSION['user']['id'] : $this->dbo->sqleval('select id_enseignant from modele_planning where id=' . $id_cours),
                                 'id_modele_planning'        => $id_cours
                             );
-                            $m = new CalendrierModel();
-                            $id_operation = $m->createOperation($parms);
+                            $operation = new OperationModel($parms);
+                            $operation->save();
+                            $id_operation = $operation->id;
                             
                             /* si la demande a bien été créée */
                             if ($id_operation) {
                                 /* envoi du mail aux superviseurs */
-                                if ($_SESSION['user_privileges'] == 'enseignant') {
+                                if ($_SESSION['user']['privileges'] == 'enseignant') {
                                     /* récupération des e-mails de tous les superviseurs */
                                     $ress = $this->dbo->query('select email from utilisateurs where find_in_set("superviseur", droits) > 0');
                                     $emails = array();
@@ -190,13 +192,13 @@ class CalendrierController extends Controller {
                                     $emails = implode(';', $emails);
                                     
                                     /* on re-récupère la matière qu'on vient de créer */
-                                    $r = $m->getOperation(array('id' => $id_operation));
+                                    $operation->get($id_operation);
                                     
                                     $v = new DemandeEmailView();
                                     
                                     $m = new Mail();
                                     //Demande : 1
-                                    $m->SendMail($_SESSION['user_email'], $emails, 1, $v->show($r));
+                                    $m->SendMail($_SESSION['user']['email'], $emails, 1, $v->show($operation->toArray()));
                                 }
                                 Router::redirect('CalendarRequestList');
                             } else {
@@ -210,8 +212,8 @@ class CalendrierController extends Controller {
                     }
                 }
             }
-            $m = new ClasseModel();
-            $classes = $m->listing();
+            $class = new ClasseModel();
+            $classes = $class->search();
             
             $v = new CalendrierDemandeAddView();
             $v->show(array('classes' => $classes));
@@ -220,7 +222,7 @@ class CalendrierController extends Controller {
     
     
     function _doDragDrop() {
-        if (in_array($_SESSION['user_privileges'], array('enseignant', 'superviseur'))) {
+        if (in_array($_SESSION['user']['privileges'], array('enseignant', 'superviseur'))) {
             $days = array(
                 1                                       => 'lundi',
                 1 + 1 * (SUBJECT_WIDTH + 6 + 1)         => 'mardi',
@@ -242,17 +244,17 @@ class CalendrierController extends Controller {
                 'jour_report'           => $days[$_POST['left']],
                 'heure_report'          => $this->FormatTimeFrToUs($heure_report),
                 'jour'                  => $ids[1],
-                'id_enseignant'         => $_SESSION['user_id'],
+                'id_enseignant'         => $_SESSION['user']['id'],
                 'id_modele_planning'    => $first_token[0],
                 'date_origine'          => date('Y-m-d', $datesSemaine[$ids[1]]),
                 'date_report'           => date('Y-m-d', $datesSemaine[array_search($_POST['left'] , array_keys($days))]),
-                'etat'                  => $_SESSION['user_privileges'] == 'superviseur' ? 'validée' : 'en attente'
+                'etat'                  => $_SESSION['user']['privileges'] == 'superviseur' ? 'validée' : 'en attente'
             );
             
             $id_matiere = $this->dbo->sqleval('select "ok" from modele_planning where id=' . $parms['id_modele_planning'] . ' and id_enseignant=' . $parms['id_enseignant']);
             
             $r = array();
-            if (($_SESSION['user_privileges'] == 'enseignant') && empty($id_matiere)) {
+            if (($_SESSION['user']['privileges'] == 'enseignant') && empty($id_matiere)) {
                 $r['result'] = 'not-created';
             } else {
                 $m = new CalendrierModel();
@@ -280,7 +282,9 @@ class CalendrierController extends Controller {
                     }
                 // cas création de la demande
                 } else if (count($first_token) == 1) {
-                    $id = $m->createOperation($parms);
+                    $operation = new OperationModel($parms);
+                    $operation->save();
+                    $id = $operation->id;
                     if ($id != null) {
                         $heure_report_fin = $this->dbo->sqleval('select date_format(addtime(o.date_report, timediff(mp.heure_fin, mp.heure_debut)), "%H:%i") from modele_planning mp, operations o where o.id_modele_planning=mp.id and o.id=' . $id);
                         $r = array(
@@ -302,7 +306,7 @@ class CalendrierController extends Controller {
         
         if (!in_array($r['result'], array('ungranted-user', 'not-created'))) {
             /* envoi du mail aux superviseurs */
-            if ($_SESSION['user_privileges'] == 'enseignant') {
+            if ($_SESSION['user']['privileges'] == 'enseignant') {
                 // récupération des adresses e-mail des superviseurs
                 $ress = $this->dbo->query('select email from utilisateurs where find_in_set("superviseur", droits) > 0');
                 $emails = array();
@@ -312,13 +316,13 @@ class CalendrierController extends Controller {
                 $emails = implode(';', $emails);
                 
                 // récupération de l'opération qu'on vient de créer
-                $m = new CalendrierModel();
-                $op = $m->getOperation(array('id' => ($r['result'] == 'created' ? $id : $first_token[1])));
+                $operation = new OperationModel();
+                $operation->get($r['result'] == 'created' ? $id : $first_token[1]);
                 
                 $v = new DemandeEmailView();
                 
                 $m = new Mail();
-                $m->SendMail($_SESSION['user_email'], $emails, 'deplacement_cours', $v->show($op));
+                $m->SendMail($_SESSION['user']['email'], $emails, 'deplacement_cours', $v->show($operation->toArray()));
             }
         }
         
@@ -328,30 +332,33 @@ class CalendrierController extends Controller {
     }
     
     public function doRequestList() {
-        $m = new CalendrierModel();
+        $operation = new OperationModel();
         $parms = array();
-        $parms['demandes'] = $m->listingOperations($_SESSION['user_privileges'] == 'enseignant' ? array('id_enseignant' => $_SESSION['user_id']) : array());
+        $parms['demandes'] = $operation->search($_SESSION['user']['privileges'] == 'enseignant' ? array('id_enseignant' => $_SESSION['user']['id']) : array());
+        
         $v = new CalendrierDemandeView();
         $v->show($parms);
     }
     
     public function doRequestReject($args) {
         $request_id = $args['request_id'];
-        if (in_array($_SESSION['user_privileges'], array('enseignant', 'superviseur'))) {
-            $m = new CalendrierModel();
-            $r = $m->getOperation(array('id' => $request_id));
+        if (in_array($_SESSION['user']['privileges'], array('enseignant', 'superviseur'))) {
+            $operation = new OperationModel();
+            $operation->get($request_id);
             
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (isset($_POST['annulation'])) {
                     Router::redirect('CalendarRequestList');
                 }
                 /* on passe l'état de la demande à "refusée" */
-                if ($m->updateOperation($request_id, array('etat' => 'refusée')) > 0) {
+                $operation->etat = 'refusée';
+                $save = $operation->save();
+                if ($save) {
                     /* on envoie l'e-mail de refus à l'enseignant (e-mail type 3) */
                     $v = new DemandeEmailView();
                     
                     $m = new Mail();
-                    $m->SendMail($_SESSION['user_email'], $r['enseignant_email'], 3, $v->show($r));
+                    $m->SendMail($_SESSION['user']['email'], $r['enseignant_email'], 3, $v->show($operation->toArray()));
                 }
                 $ajax = $this->_getArg('ajax');
                 if (!empty($ajax)) {
@@ -360,18 +367,18 @@ class CalendrierController extends Controller {
                 Router::redirect('CalendarRequestList');
             } else {
                 $v = new CalendrierDemandeRejectView();
-                $v->show($r);
+                $v->show($r->toArray());
             }
         }
     }
     
     public function doRequestAccept($args) {
         $request_id = $args['request_id'];
-        if (in_array($_SESSION['user_privileges'], array('enseignant', 'superviseur'))) {
+        if (in_array($_SESSION['user']['privileges'], array('enseignant', 'superviseur'))) {
             $ajax = $this->_getArg('ajax');
             
-            $m = new CalendrierModel();
-            $r = $m->getOperation(array('id' => $request_id));
+            $operation = new OperationModel();
+            $operation->get($request_id);
             
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (isset($_POST['annulation'])) {
@@ -387,25 +394,25 @@ class CalendrierController extends Controller {
                         $params['date_report'] = $this->FormatDateTimeFrToUs($_POST['date_report'] . ' ' . sprintf('%02d', $_POST['heure_report_h']) . ':' . sprintf('%02d', $_POST['heure_report_m']));
                     }
                     if ($m->updateOperation($request_id, $params) > 0) {
-                        $m = new CalendrierModel();
-                        $r = $m->getOperation(array('id' => $request_id));
+                        $operation = new CalendrierModel();
+                        $operation->get($request_id);
                         
                         $v = new DemandeEmailView();
                         
                         $m = new Mail();
-                        $m->SendMail($_SESSION['user_email'], $r['enseignant_email'], 2, $v->show($r));
-                        $m->SendMail($_SESSION['user_email'], $r['classe_email'], 4, $v->show($r));
+                        $m->SendMail($_SESSION['user']['email'], $operation->email_enseignant, 2, $v->show($operation->toArray()));
+                        $m->SendMail($_SESSION['user']['email'], $operation->email_classe, 4, $v->show($operation->toArray()));
                     }
                     Router::redirect('CalendarRequestList');
                 }
             }
             $v = new CalendrierDemandeAcceptView();
-            $v->show($r);
+            $v->show($operation->toArray());
         }
     }
     
     public function doRequestHistory() {
-        if (in_array($_SESSION['user_privileges'], array('enseignant', 'superviseur'))) {
+        if (in_array($_SESSION['user']['privileges'], array('enseignant', 'superviseur'))) {
             /* Récupération du mois passé en paramètre, s'il y en a pas, on prend le mois courant */
             $month = $this->_getArg('month');
             if (empty($month)) {
@@ -423,8 +430,8 @@ class CalendrierController extends Controller {
             
             /* Si l'utilisateur est un enseignant, on n'affiche que ses propres réservations */
             $whereEnseignant = '';
-            if ($_SESSION['user_privileges'] == 'enseignant') {
-                $whereEnseignant = ' and u.id=' . $_SESSION['user_id'];
+            if ($_SESSION['user']['privileges'] == 'enseignant') {
+                $whereEnseignant = ' and u.id=' . $_SESSION['user']['id'];
             }
             $demandes= $this->dbo->query('
                 select 
@@ -468,14 +475,15 @@ class CalendrierController extends Controller {
     
     public function doPeriodList() {
         // Si l'utilisateur n'est pas superviseur on interrompt le script
-        if ($_SESSION['user_privileges'] != 'superviseur') {
+        if ($_SESSION['user']['privileges'] != 'superviseur') {
             die();
         }
         $c = new ClasseModel();
-        $classes = $c->listing();
-        $m = new CalendrierModel();
+        $classes = $c->search();
+        
+        $period = new PeriodModel();
         foreach ($classes as &$class) {
-            $class['periods'] = $m->getPeriods($class['id']);
+            $class['periods'] = $period->search(array('id_classe' => $class['id']));
         }
         $v = new CalendrierShowPeriodesView();
         $v->show(array('classes' => $classes));
@@ -484,25 +492,25 @@ class CalendrierController extends Controller {
     public function doPeriodDelete($args) {
         $period_id = $args['period_id'];
         // Si l'utilisateur n'est pas superviseur on interrompt le script
-        if ($_SESSION['user_privileges'] != 'superviseur') {
+        if ($_SESSION['user']['privileges'] != 'superviseur') {
             die();
         }
         
-        $m = new CalendrierModel();
-        $r = $m->getPeriod($period_id);
+        $period = new PeriodModel();
+        $period->get($period_id);
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (isset($_POST['validation'])) {
-                $m->deletePeriod($period_id);
+                $period->delete(array('id' => $period_id));
             }
-            Router::redirect('CalendarPeriodList', NULL, array('class_id' => $r['id_classe']));
+            Router::redirect('CalendarPeriodList', NULL, array('class_id' => $m->id_classe));
         }
         $v = new CalendrierDeletePeriodView();
-        $v->show($r);
+        $v->show($period->toArray());
     }
     
     public function doPeriodAdd() {
         // Si l'utilisateur n'est pas superviseur on interrompt le script
-        if ($_SESSION['user_privileges'] != 'superviseur') {
+        if ($_SESSION['user']['privileges'] != 'superviseur') {
             die();
         }
         
@@ -517,31 +525,28 @@ class CalendrierController extends Controller {
                 $_SESSION['ERROR_MSG'] = 'Veuillez saisir une date de début de période';
             } else if (empty($date_fin)) {
                 $_SESSION['ERROR_MSG'] = 'Veuillez saisir une date de fin de période';
-                
             } else {
-                $parms = array(
-                    'type'              => $this->_getArg('type'),
-                    'date_debut'        => date('Y-m-d H:i:s', $date_debut),
-                    'date_fin'          => date('Y-m-d H:i:s', $date_fin),
-                    'id_classe'         => $id
-                );
-                $m = new CalendrierModel();
-                $id_periode = $m->createPeriod($parms);
+                $period = new PeriodModel();
+                $period->type = $this->_getArg('type');
+                $period->date_debut = date('Y-m-d H:i:s', $date_debut);
+                $period->date_fin = date('Y-m-d H:i:s', $date_fin);
+                $period->id_classe = $id;
+                $period->save();
                 if ($parms['type'] != 'vacances') {
                     foreach ($_POST as $k => $v) {
                         if (substr($k, 0, 5) == 'event') {
                             $tmp = explode('-', $v);
-                            $this->dbo->insert('insert into modele_planning(jour, heure_debut, heure_fin, id_matiere, id_enseignant, id_classe, id_periode) values(' . intval($tmp[0] + 1) . ', "' . $this->FormatTimeFrToUs($tmp[1]) . '", "' . $this->FormatTimeFrToUs($tmp[2]) . '", ' . intval($tmp[3]) . ', (select id_enseignant from enseignants_matieres_classes where id_matiere=' . intval($tmp[3]) . ' and id_classe=' . $this->_getArg('class_id') . ' limit 0, 1), ' . $this->_getArg('class_id') . ', ' . $id_periode . ')');
+                            $this->dbo->insert('insert into modele_planning(jour, heure_debut, heure_fin, id_matiere, id_enseignant, id_classe, id_periode) values(' . intval($tmp[0] + 1) . ', "' . $this->FormatTimeFrToUs($tmp[1]) . '", "' . $this->FormatTimeFrToUs($tmp[2]) . '", ' . intval($tmp[3]) . ', (select id_enseignant from enseignants_matieres_classes where id_matiere=' . intval($tmp[3]) . ' and id_classe=' . $this->_getArg('class_id') . ' limit 0, 1), ' . $this->_getArg('class_id') . ', ' . $period->id . ')');
                         }
                     }
                 }
                 Router::redirect('CalendarPeriodList', NULL, array('class_id' => $id));
             }
         }
-        $m = new MatieresClasseModel();
+        $m = new EnseignantsMatieresClassesModel();
         $r = array(
             'id_classe'     => $id,
-            'matieres'      => $m->getSubjectsClass(array('id' => $id))
+            'matieres'      => $m->search(array('id_classe' => $id))
         );
         $v = new CalendrierAddPeriodView();
         $v->show($r);
@@ -550,23 +555,21 @@ class CalendrierController extends Controller {
     public function doPeriodEdit($args) {
         $period_id = $args['period_id'];
         // Si l'utilisateur n'est pas superviseur on interrompt le script
-        if ($_SESSION['user_privileges'] != 'superviseur') {
+        if ($_SESSION['user']['privileges'] != 'superviseur') {
             die();
         }
         
-        $m = new CalendrierModel();
-        $r = $m->getPeriod($period_id);
+        $period = new PeriodModel();
+        $period->get($period_id);
         
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (isset($_POST['validation'])) {
-                $parms = array(
-                    'type'              => $this->_getArg('type'),
-                    'date_debut'        => $this->FormatDateTimeFrToUs($this->_getArg('date_debut'), false),
-                    'date_fin'          => $this->FormatDateTimeFrToUs($this->_getArg('date_fin'), false),
-                );
-                $m = new CalendrierModel();
-                $m->updatePeriod($period_id, $parms);
-                if ($parms['type'] != 'vacances') {
+                $period->type = $this->_getArg('type');
+                $period->date_debut = $this->FormatDateTimeFrToUs($this->_getArg('date_debut'), false);
+                $period->date_fin = $this->FormatDateTimeFrToUs($this->_getArg('date_fin'), false);
+                $period->save();
+                
+                if ($period->type != 'vacances') {
                     $usedIds = array();
                     foreach ($_POST as $k => $v) {
                         if (substr($k, 0, 5) == 'event') {
@@ -578,28 +581,32 @@ class CalendrierController extends Controller {
                                 heure_debut="' . $this->FormatTimeFrToUs($tmp[1]) . '",
                                 heure_fin="' . $this->FormatTimeFrToUs($tmp[2]) . '",
                                 id_matiere=' . intval($tmp[3]) . ',
-                                id_enseignant=(select id_enseignant from enseignants_matieres_classes where id_matiere=' . intval($tmp[3]) . ' and id_classe=' .  $r['id_classe'] . ' limit 0, 1),
-                                id_classe=' .  $r['id_classe'] . ',
+                                id_enseignant=(select id_enseignant from enseignants_matieres_classes where id_matiere=' . intval($tmp[3]) . ' and id_classe=' .  $period->id_classe . ' limit 0, 1),
+                                id_classe=' .  $period->id_classe . ',
                                 id_periode=' . $id . '
                                 where id=' . $tmp[4]);
                                 
                                 $usedIds[] = $tmp[4];
                             } else {
-                                $usedIds[] = $this->dbo->insert('insert into modele_planning(jour, heure_debut, heure_fin, id_matiere, id_enseignant, id_classe, id_periode) values(' . intval($tmp[0] + 1) . ', "' . $this->FormatTimeFrToUs($tmp[1]) . '", "' . $this->FormatTimeFrToUs($tmp[2]) . '", ' . intval($tmp[3]) . ', (select id_enseignant from enseignants_matieres_classes where id_matiere=' . intval($tmp[3]) . ' and id_classe=' . $r['id_classe'] . ' limit 0, 1), ' . $r['id_classe'] . ', ' . $period_id . ')');
+                                $usedIds[] = $this->dbo->insert('insert into modele_planning(jour, heure_debut, heure_fin, id_matiere, id_enseignant, id_classe, id_periode) values(' . intval($tmp[0] + 1) . ', "' . $this->FormatTimeFrToUs($tmp[1]) . '", "' . $this->FormatTimeFrToUs($tmp[2]) . '", ' . intval($tmp[3]) . ', (select id_enseignant from enseignants_matieres_classes where id_matiere=' . intval($tmp[3]) . ' and id_classe=' . $period->id_classe . ' limit 0, 1), ' . $period->id_classe . ', ' . $period_id . ')');
                             }
                         }
                     }
                     $this->dbo->delete('delete from modele_planning where id not in (' . implode(',', $usedIds) . ') and id_periode=' . $period_id);
                 }
             }
-            Router::redirect('CalendarPeriodList', array('id_classe' => $r['id_classe']));
+            Router::redirect('CalendarPeriodList', array('id_classe' => $period->id_classe));
         }
-        $c = new ClasseModel();
+        $class = new ClasseModel();
+        $r['classes'] = $class->search();
+        
+        $r['cours'] = $this->dbo->query('select id, jour+0 as jour, jour as jour_libelle, date_format(heure_debut, "%H:%i") as heure_debut, date_format(heure_fin, "%H:%i") as heure_fin, id_matiere, id_periode from modele_planning where id_classe=' . $period->id_classe . ' and id_periode=' . $period_id);
+        
+        $m = new EnseignantsMatieresClassesModel();
+        $r['matieres'] = $m->search(array('id_classe' => $period->id_classe));
+        $r = array_merge($r, $period->toArray());
+        
         $v = new CalendrierEditPeriodView();
-        $r['classes'] = $c->listing();
-        $r['cours'] = $this->dbo->query('select id, jour+0 as jour, jour as jour_libelle, date_format(heure_debut, "%H:%i") as heure_debut, date_format(heure_fin, "%H:%i") as heure_fin, id_matiere, id_periode from modele_planning where id_classe=' . $r['id_classe'] . ' and id_periode=' . $period_id);
-        $m = new MatieresClasseModel();
-        $r['matieres'] = $m->getSubjectsClass($r['id_classe']);
         $v->show($r);
     }
 }

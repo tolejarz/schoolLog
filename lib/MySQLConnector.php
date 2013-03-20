@@ -16,8 +16,8 @@ class MySQLConnector {
     public function getLink() {
         $configurator = Configurator::getInstance('config/config.json');
         $conf = $configurator->getConfiguration();
-        $this->_link = new MySQLiDBO($conf['database']['schoollog']['host'], $conf['database']['schoollog']['username'], $conf['database']['schoollog']['password'], $conf['database']['schoollog']['database']);
-        return $this->_link;
+        $link = new MySQLiDBO($conf['database']['schoollog']['host'], $conf['database']['schoollog']['username'], $conf['database']['schoollog']['password'], $conf['database']['schoollog']['database']);
+        return $link;
     }
     // ! dev
     

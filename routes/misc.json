@@ -6,13 +6,6 @@
         "args":[],
         "method":"get"
     },
-    "ResourceGet":{
-        "uri":"/resource/(.+)",
-        "reverse_uri":"",
-        "handler":"ResourceHandler.get",
-        "args":["resource_path"],
-        "method":"get"
-    },
     "UserLogout":{
         "uri":"/logout",
         "handler":"AuthHandler.logout",

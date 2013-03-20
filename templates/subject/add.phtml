@@ -1,0 +1,31 @@
+<div class="selectionBox">
+    <form action="" method="post">
+        <p class="headerSelectionBox">Veuillez saisir les informations relatives à la matière.</p>
+        <table class="searchContainerSmall">
+            <tbody>
+                <tr>
+                    <th>Nom :</th>
+                    <td><input name="nom" type="text" value="<?php echo @$_POST['nom']; ?>" /></td>
+                </tr>
+                <tr>
+                    <th class="top">Classes concernées :</th>
+                    <td>
+                        <table class="condensedList">
+                        <?php foreach ($parms['classes'] as $c) : ?>
+                            <tr>
+                                <td>
+                                    <input <?php echo (@in_array($c['id'], $_POST['class']) ? 'checked=checked ' : ''); ?>name="class[]" type="checkbox" value="<?php echo $c['id']; ?>" /> <?php echo $c['libelle']; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="submitContainer">
+            <input name="validation" type="submit" value="Ajouter" />
+            <input name="annulation" type="submit" value="Annuler" />
+        </p>
+    </form>
+</div>

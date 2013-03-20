@@ -41,7 +41,7 @@ $days = array('lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi');
 echo('
 	<select class="subject_id" style="display: none;">');
 foreach ($parms['matieres'] as $matiere) {
-	echo('<option value="' . $matiere['id'] . '">' . $matiere['nom'] . '</option>');
+	echo('<option value="' . $matiere['id_matiere'] . '">' . $matiere['nom_matiere'] . '</option>');
 }
 echo('
 	</select>

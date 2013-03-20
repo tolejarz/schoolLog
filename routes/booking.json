@@ -5,5 +5,12 @@
         "handler":"BookingHandler.list",
         "args":[],
         "method":"get"
+    },
+    "BookingAdd":{
+        "uri":"/booking/add",
+        "reverse_uri":"/booking/add",
+        "handler":"BookingHandler.add",
+        "args":[],
+        "method":"get"
     }
 }

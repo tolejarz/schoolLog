@@ -22,8 +22,8 @@ if (empty($parms['classes'])) {
 				echo('
 					<tr>
 						<td class="centered">
-							<a href="' . Router::build('CalendarPeriodDelete', array('period_id' => $period['id'])) . '" target="_self"><img alt="Supprimer" src="/resource/img/delete.png" title="Supprimer" />
-							<a href="' . Router::build('CalendarPeriodEdit', array('period_id' => $period['id'])) . '" target="_self"><img alt="Editer" src="/resource/img/edit.png" title="Editer" /></a>
+							<a href="' . Router::build('CalendarPeriodDelete', array('period_id' => $period['id'])) . '" target="_self"><img alt="Supprimer" src="/img/delete.png" title="Supprimer" />
+							<a href="' . Router::build('CalendarPeriodEdit', array('period_id' => $period['id'])) . '" target="_self"><img alt="Editer" src="/img/edit.png" title="Editer" /></a>
 						</td>
 						<td class="centered">' . $period['type'] . '</td>
 						<td class="centered">' . $period['date_debut'] . '</td>

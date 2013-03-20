@@ -18,7 +18,7 @@ if (!empty($parms['demandes'])) {
 		<table class="listingContainer">
 			<tr>
 				<th>Classe</th>
-				' . ($_SESSION['user_privileges'] == 'superviseur' ? '<th>Enseignant</th>' : '') . '
+				' . ($_SESSION['user']['privileges'] == 'superviseur' ? '<th>Enseignant</th>' : '') . '
 				<th>Matière</th>
 				<th>Date/Heure d\'origine</th>
 				<th>Date/Heure de report</th>
@@ -27,7 +27,7 @@ if (!empty($parms['demandes'])) {
 	foreach ($parms['demandes'] as $d) {
 		echo('<tr>
 				<td class="centered">' . $d['classe'] . '</td>
-				' . ($_SESSION['user_privileges'] == 'superviseur' ? '<td class="centered">' . $d['enseignant'] . '</td>' : '') . '
+				' . ($_SESSION['user']['privileges'] == 'superviseur' ? '<td class="centered">' . $d['enseignant'] . '</td>' : '') . '
 				<td class="centered">' . $d['matiere'] . '</td>
 				<td class="centered">' . $d['date_origine'] . ' à ' . $d['heure_origine'] . '</td>
 				<td class="centered">' . ($d['date_report'] != null ? $d['date_report'] .' à  ' . $d['heure_report']  : '(non définie)') . '</td>

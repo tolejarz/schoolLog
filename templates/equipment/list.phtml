@@ -1,0 +1,52 @@
+<h2>Liste du matériel</h2>
+<?php if ($_SESSION['user']['privileges'] == 'superviseur') : ?>
+    <a class="addLink" href="<?php echo Router::build('EquipmentAdd'); ?>" target="_self">Ajouter un matériel</a>
+    <p class="separator3"></p>
+<?php endif; ?>
+<?php if (empty($parms['equipments'])) : ?>
+    <p class="notice">Aucun matériel</p>
+<?php else : ?>
+    <table class="listingContainer">
+        <tr>
+            <?php if ($_SESSION['user']['privileges'] == 'superviseur') : ?>
+            <th id="actions">Actions</th>
+            <?php endif; ?>
+            <th>Type</th>
+            <th>Modèle</th>
+            <?php if ($_SESSION['user']['privileges'] == 'enseignant') : ?>
+            <th>Réserver</th>
+            <?php endif; ?>
+            <?php if ($_SESSION['user']['privileges'] == 'superviseur') : ?>
+            <th>Etat</th>
+            <?php endif; ?>
+        </tr>
+        <?php foreach ($parms['equipments'] as $equipment) : ?>
+            <tr>
+                <?php if ($_SESSION['user']['privileges'] == 'superviseur') : ?>
+                <td class="centered">
+                    <a href="<?php echo Router::build('EquipmentDelete', array('equipment_id' => $equipment['id'])); ?>" target="_self"><img alt="Supprimer" src="/img/delete.png" title="Supprimer" /></a>
+                    <a href="<?php echo Router::build('EquipmentEdit', array('equipment_id' => $equipment['id'])); ?>" target="_self"><img alt="Modifier" src="/img/edit.png" title="Modifier" /></a>
+                </td>
+                <?php endif; ?>
+                <td><?php echo $equipment['type']; ?></td>
+                <td><?php echo $equipment['modele']; ?></td>
+                <?php if ($_SESSION['user']['privileges'] == 'enseignant') : ?>
+                    <?php if ($equipment['etat'] == 'fonctionnel') : ?>
+                    <td class="centered"><a href="<?php echo Router::build('BookingAdd', NULL, array('id_materiel' => $equipment['id'])); ?>" target="_self"><img alt="Réserver" src="/img/reserve.png" title="Réserver" /></a></td>'
+                    <?php else : ?>
+                    <td class="refused"><b><?php echo $equipment['etat']; ?></b></td>
+                    <?php endif; ?>
+                <?php endif; ?>
+                <?php if ($_SESSION['user']['privileges'] == 'superviseur') : ?>
+                    <?php if ($equipment['etat'] == 'fonctionnel') : ?>
+                    <td class="accepted">
+                    <?php else : ?>
+                    <td class="refused">
+                    <?php endif; ?>
+                        <b><?php echo $equipment['etat']; ?></b>
+                    </td>
+                <?php endif; ?>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+<?php endif; ?>

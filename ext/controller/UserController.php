@@ -1,154 +1,129 @@
 <?php
+// No SQL!!! :)
 class UserController extends Controller {
-    /* Fonction pour afficher la liste des enseignants */
-    public function doList() {
-        if (in_array($_SESSION['user_privileges'], array('superviseur', 'administrateur'))) {
-            /* récupération de la liste des enseignants dans la base de données */
-            $m = new UserModel();
-            $v = new UserDefaultView();
-            $v->show(array('enseignants' => $m->listingEnseignants()));
-        }
-    }
-    
-    /* Fonction pour supprimer un enseignant */
-    public function doDelete($args) {
-        $user_id = $args['user_id'];
-        
-        if (in_array($_SESSION['user_privileges'], array('superviseur', 'administrateur'))) {
-            $m = new UserModel();
-            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                if (isset($_POST['validation'])) {
-                    /* Suppression de l'enseignant */
-                    $m->delete($user_id);
-                }
-                Router::redirect('UserList');
-            }
-            /* Récupération des informations de l'enseignant */
-            $r = $m->get(array('id' => $user_id));
-            $v = new UserDeleteView();
-            $v->show($r);
-        }
-    }
-    
-    /* Fonction pour ajouter un enseignant */
     public function doAdd(){
-        if (in_array($_SESSION['user_privileges'], array('superviseur', 'administrateur'))) {
+        if (in_array($_SESSION['user']['privileges'], array('superviseur', 'administrateur'))) {
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (!isset($_POST['validation'])) {
                     Router::redirect('UserList');
                 }
                 
                 $login = strtolower($_POST['nom']);
-                if (empty($login)) {
-                    $_SESSION['ERROR_MSG'] = 'Veuillez remplir le champ Nom';
-                } else if ($this->dbo->sqleval('select count(*) from utilisateurs where login="' . $login . '"') > 0) {
-                    $_SESSION['ERROR_MSG'] = 'Cet utilisateur existe déjà';
+                //$infosLDAP = recupererInfos(LDAP_SERVER, $login);
+                /*if (!empty($infosLDAP)) {
+                    $_SESSION['ERROR_MSG'] = 'Cet utilisateur n\'existe pas dans le serveur LDAP';
                 } else {
-                    //$infosLDAP = recupererInfos(LDAP_SERVER, $login);
-                    if (!empty($infosLDAP)) {
-                        $_SESSION['ERROR_MSG'] = 'Cet utilisateur n\'existe pas dans le serveur LDAP';
-                    } else {
-                        $parms = array(
-                            'droits'        => 'enseignant',
-                            'login'         => $login,
-                            'civility'      => $_POST['civility'],
-                            'nom'           => $_POST['nom'],
-                            'email'         => $infosLDAP['email']
-                        );
-                        
-                        $m = new UserModel();
-                        $id = $m->create($parms);
-                        
-                        $m = new MatieresClasseModel();
-                        foreach ($_POST as $key => $value) {
-                            if (substr($key, 0, 3) == 'cm_') {
-                                $ids = explode('_', substr($key, 3));
-                                $m->create(array('id_enseignant' => $id, 'id_classe' => $ids[0], 'id_matiere' => $ids[1]));
-                            }
-                        }
+                */
+                $user = new UserModel(array(
+                    'droits'        => 'enseignant',
+                    'login'         => $login,
+                    'civility'      => $_POST['civility'],
+                    'nom'           => $_POST['nom'],
+                    'email'         => $infosLDAP['email']
+                ));
+                $user->save();
+                
+                foreach ($_POST['emc'] as $class_id => $id_matieres) {
+                    foreach ($id_matieres as $id_matiere) {
+                        $m = new EnseignantsMatieresClassesModel(array(
+                            'id_enseignant' => $user->id,
+                            'id_classe'     => $class_id,
+                            'id_matiere'    => $id_matiere,
+                        ));
+                        $m->save();
                     }
-                    Router::redirect('UserList');
                 }
+                //}
+                Router::redirect('UserList');
             }
             
-            /* récupération des classes / matières */
-            $m = new ClasseModel();
-            $resc = $m->listing();
-            $m = new MatieresClasseModel();
-            $classes = array();
-            foreach ($resc as $c) {
-                $matieres =  $m->getSubjectsClass(array('id' => $c['id']));
-                $classes[] = array('id' => $c['id'], 'libelle' => $c['libelle'], 'matieres' => $matieres);
+            $class = new ClasseModel();
+            $classes = $class->search();
+            
+            $m = new EnseignantsMatieresClassesModel();
+            foreach ($classes as $i => $c) {
+                $classes[$i]['matieres'] = $m->search(array('id_classe' => $c['id']));
             }
+            
             $v = new UserAddView();
             $v->show(array('classes' => $classes));
         }
     }
     
-    /* Fonction pour éditer un enseignant */
+    public function doDelete($args) {
+        $user_id = $args['user_id'];
+        if (in_array($_SESSION['user']['privileges'], array('superviseur', 'administrateur'))) {
+            $user = new UserModel();
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                if (isset($_POST['validation'])) {
+                    $user->delete(array('id' => $user_id));
+                }
+                Router::redirect('UserList');
+            }
+            $user->get($user_id);
+            
+            $v = new UserDeleteView();
+            $v->show($user->toArray());
+        }
+    }
+    
     public function doEdit($args) {
         $user_id = $args['user_id'];
-        
-        if (in_array($_SESSION['user_privileges'], array('superviseur', 'administrateur'))) {
-            $m = new UserModel();
-            $r = $m->get(array('id' => $user_id));
+        if (in_array($_SESSION['user']['privileges'], array('superviseur', 'administrateur'))) {
+            $user = new UserModel();
+            $user->get($user_id);
             
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                if (isset($_POST['annulation'])) {
-                    Router::redirect('UserList');
-                }
-                /* Gestion des erreurs */
-                if (empty($_POST['nom'])) {
-                    $_SESSION['ERROR_MSG'] = 'Veuillez remplir le champ Nom';
-                } elseif ($this->dbo->sqleval('select count(*) from utilisateurs where id!=' . $user_id . ' and login="' . $login . '"') > 0) {
-                    $_SESSION['ERROR_MSG'] = 'Cet utilisateur existe déjà';
-                }
-                /* Fin de la gestion des erreurs */
-                
-                if (!isset($_SESSION['ERROR_MSG'])) {
-                    if (isset($_POST['validation']) && ($_POST['nom'] != $r['nom'] || $_POST['civility'] != $r['civility'])) {
-                        $parms = array(
-                            'nom'           => $_POST['nom'],
-                            'civility'      => $_POST['civility'],
-                        );
-                        $m->update($user_id, $parms);
-                    }
+                if (isset($_POST['validation'])) {
+                    $user->nom = $_POST['nom'];
+                    $user->civility = $_POST['civility'];
+                    $user->save();
                     
-                    $r = $this->dbo->delete('delete from enseignants_matieres_classes where id_enseignant=' . $user_id);
-                    $m = new MatieresClasseModel();
-                    foreach ($_POST as $key => $value) {
-                        if (substr($key, 0, 3) == 'cm_') {
-                            $ids = explode('_', substr($key, 3));
-                            $m->create(array('id_enseignant' => $user_id, 'id_classe' => $ids[0], 'id_matiere' => $ids[1]));
+                    $m = new EnseignantsMatieresClassesModel();
+                    $m->delete(array('id_enseignant' => $user_id));
+                    
+                    foreach ($_POST['emc'] as $class_id => $id_matieres) {
+                        foreach ($id_matieres as $id_matiere) {
+                            $m = new EnseignantsMatieresClassesModel(array(
+                                'id_enseignant' => $user_id,
+                                'id_classe'     => $class_id,
+                                'id_matiere'    => $id_matiere,
+                            ));
+                            $m->save();
                         }
                     }
-                    Router::redirect('UserList');
                 }
+                Router::redirect('UserList');
             }
             
-            /* récupération des matières de chaque classe */
-            $m = new ClasseModel();
-            $resc = $m->listing();
-            $m = new MatieresClasseModel();
-            $classes = array();
-            foreach ($resc as $c) {
-                $matieres =  $m->getSubjectsClass(array('id' => $c['id']));
-                $classes[] = array('id' => $c['id'], 'libelle' => $c['libelle'], 'matieres' => $matieres);
+            $class = new ClasseModel();
+            $classes = $class->search();
+            
+            $m = new EnseignantsMatieresClassesModel();
+            foreach ($classes as $i => $c) {
+                $classes[$i]['matieres'] = $m->search(array('id_classe' => $c['id']));
             }
             
-            /* récupération des matières de l'enseignant sélectionné */
-            $m = new MatieresClasseModel();
-            $matieres_enseignant = $m->getSubjectsEnseignant(array('id' => $user_id));
+            $m = new EnseignantsMatieresClassesModel();
             $params = array(
                 'id'                    => $user_id,
-                'login'                 => $r['login'],
-                'nom'                   => $r['nom'],
-                'civility'              => $r['civility'],
+                'login'                 => $user->login,
+                'nom'                   => $user->nom,
+                'civility'              => $user->civility,
                 'classes'               => $classes,
-                'matieres_enseignant'   => $matieres_enseignant
+                'matieres_enseignant'   => $m->search(array('id_enseignant' => $user_id))
             );
             $v = new UserEditView();
             $v->show($params);
+        }
+    }
+    
+    public function doList() {
+        if (in_array($_SESSION['user']['privileges'], array('superviseur', 'administrateur'))) {
+            $user = new UserModel();
+            
+            $v = new UserDefaultView();
+            $v->show(array('enseignants' => $user->search(array('droits find' => 'enseignant'))));
         }
     }
 }

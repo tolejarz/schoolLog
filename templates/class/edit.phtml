@@ -1,0 +1,19 @@
+<div class="selectionBox">
+    <form action="" method="post">
+        <p class="headerSelectionBox">Veuillez modifier les informations relatives à la classe.</p>
+        <table class="searchContainerSmall">
+            <tr>
+                <th>Libellé :</th>
+                <td><input name="libelle" type="text" value="<?php echo (isset($_POST['libelle']) ? $_POST['libelle'] : $parms['libelle']); ?>" /></td>
+            </tr>
+            <tr>
+                <th>Email :</th>
+                <td><input name="email" type="text" value="<?php echo (isset($_POST['email']) ? $_POST['email'] : $parms['email']); ?>" /></td>
+            </tr>
+        </table>
+        <p class="submitContainer">
+            <input name="validation" type="submit" value="Valider" />
+            <input name="annulation" type="submit" value="Annuler" />
+        </p>
+    </form>
+</div>

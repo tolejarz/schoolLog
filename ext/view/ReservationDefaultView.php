@@ -24,7 +24,7 @@ class ReservationDefaultView extends HtmlView {
 		$parms['_arg'] = $data['_arg'];
 		$parms['_week'] = $data['_week'];
 		$parms['materiels'] = $materiels;
-		$this->_pushTemplate('templates/ReservationDefault.php', $parms);
+		$this->_pushTemplate('templates/booking/list.phtml', $parms);
 	}
 }
 ?>

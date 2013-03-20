@@ -1,0 +1,68 @@
+<?php if (!empty($parms['classes'])) : ?>
+    <?php foreach ($parms['classes'] as $class) : ?>
+        <?php if ($_SESSION['user']['privileges'] != 'eleve') : ?>
+        <h2><?php echo $class['nom_classe']; ?></h2>
+        <?php endif; ?>
+        
+        <?php if (!empty($class['subjects'])) : ?>
+            <?php foreach ($class['subjects'] as $subject) : ?>
+                <?php if (in_array($_SESSION['user']['privileges'], array('enseignant', 'superviseur'))) : ?>
+                    <a class="addLink" href="<?php echo Router::build('SupportAdd', NULL, array('class_id' => $class['id_classe'], 'subject_id' => $subject['id_matiere'])); ?>" target="_self">Ajouter un support</a>
+                <?php endif; ?>
+                    <h3<?php echo ($_SESSION['user']['privileges'] == 'enseignant' ? ' id="' . $class['id_classe'] . '-' . $subject['id_matiere'] . '"' : ''); ?>><?php echo $subject['nom_matiere']; ?></h3>
+                    <p class="separator4"></p>
+                <?php if (!empty($subject['supports'])) : ?>
+                    <table class="listingContainer">
+                        <tr>
+                            <?php if (in_array($_SESSION['user']['privileges'], array('enseignant', 'superviseur'))) : ?>
+                            <th id="actions">Actions</th>
+                            <?php endif; ?>
+                            <th>Date d'envoi</th>
+                            <?php if  (in_array($_SESSION['user']['privileges'], array('eleve', 'superviseur'))) : ?>
+                            <th>Enseignant</th>
+                            <?php endif; ?>
+                            <th>Titre du support</th>
+                            <th>Fichier</th>
+                        </tr>
+                    <?php foreach ($subject['supports'] as $support) : ?>
+                        <tr>
+                            <?php if (in_array($_SESSION['user']['privileges'], array('enseignant', 'superviseur'))) : ?>
+                            <td class="centered">
+                                <a href="<?php echo Router::build('SupportDelete', array('support_id' => $support['id'])); ?>" target="_self"><img alt="Supprimer" src="/img/delete.png" title="Supprimer" /></a>
+                            <?php endif; ?>
+                                <?php if ($_SESSION['user']['privileges'] == 'enseignant'): ?>
+                                <a href="<?php echo Router::build('SupportEdit', array('support_id' => $support['id'])); ?>" target="_self"><img alt="Modifier" src="/img/edit.png" title="Modifier" /></a>
+                                <?php endif; ?>
+                            <?php if (in_array($_SESSION['user']['privileges'], array('enseignant', 'superviseur'))) : ?>
+                            </td>
+                            <?php endif; ?>
+                            
+                            <td class="centeredThin"><?php echo $support['date_creation']; ?></td>
+                            
+                            <?php if (in_array($_SESSION['user']['privileges'], array('eleve', 'superviseur'))) : ?>
+                            <td class="centeredThin"><?php echo $support['id_enseignant']; ?></td>
+                            <?php endif; ?>
+                            
+                            <td><?php echo $support['titre']; ?></td>
+                            
+                            <td class="centeredThin"><a class="downloadLink" href="<?php echo UPLOAD_PATH . $support['nom_fichier']; ?>" target="_blank">Télécharger</a></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </table>
+                <?php else : ?>
+                    <p class="notice">Aucun support</p>
+                <?php endif; ?>
+                <p class="separator2"></p>
+            <?php endforeach; ?>
+        <?php else : ?>
+            <p class="notice">Aucun support</p>
+        <?php endif; ?>
+        <p class="separator1"></p>
+    <?php endforeach; ?>
+<?php else : ?>
+    <?php if ($_SESSION['user']['privileges'] == 'enseignant') : ?>
+    <p class="notice">Vous n'enseignez dans aucune classe</p>
+    <?php else : ?>
+    <p class="notice">Aucun support trouvé</p>
+    <?php endif; ?>
+<?php endif; ?>

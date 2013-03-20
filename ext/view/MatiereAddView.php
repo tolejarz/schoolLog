@@ -2,7 +2,7 @@
 class MatiereAddView extends HtmlView {
 	function show($viewparms = array()) {
 		$parms = $viewparms;
-		$this->_pushTemplate('templates/MatiereAdd.php', $parms);
+		$this->_pushTemplate('templates/subject/add.phtml', $parms);
 	}
 }
 ?>

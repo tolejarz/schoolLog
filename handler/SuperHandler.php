@@ -1,12 +1,12 @@
 <?php
 class SuperHandler extends Handler {
     public function checkSession() {
-        if (!isset($_SESSION['user_id'])) {
+        if (!isset($_SESSION['user']['id'])) {
             $auth_handler = new AuthHandler($this->args, $this->settings, $this->dbo);
             $auth_handler->doLogin();
             die();
         }
-        if (empty($_SESSION['user_charter'])) {
+        if (empty($_SESSION['user']['charter'])) {
             $auth_handler = new AuthHandler($this->args, $this->settings, $this->dbo);
             $auth_handler->doCharte();
             die();
@@ -15,7 +15,7 @@ class SuperHandler extends Handler {
         if(isset($_GET["numero"]))
         {
             if($_GET['redir']){
-                header("Location: " . SITE_DIR . "index.php?numero=".$_GET['numero']);
+                header("Location: index.php?numero=".$_GET['numero']);
                 die();
             }
             if ($_GET["numero"] == '404') {

@@ -6,7 +6,7 @@ class SauvegardeRestoreView extends HtmlView {
 			'date'		=> $this->FormatDateUsToFr($viewparms['date']),
 			'heure'		=> $this->FormatTimeUsToFr($viewparms['heure'])
 		);
-		$this->_pushTemplate('templates/SauvegardeRestore.php', $parms);
+		$this->_pushTemplate('templates/backup/restore.phtml', $parms);
 	}
 }
 ?>
