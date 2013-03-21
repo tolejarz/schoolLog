@@ -121,7 +121,7 @@ abstract class Repository {
         return $r;
     }
     
-    private function find($filters, $options) {
+    protected function find($filters, $options) {
         $filters = $this->build_filters($filters);
         $where = $filters['fields'];
         $where_v = $filters['values'];

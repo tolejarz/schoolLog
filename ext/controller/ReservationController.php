@@ -17,8 +17,9 @@ class ReservationController extends Controller {
                 }
             }
             
-            $m = new ReservationModel();
-            $r = $m->get(array('id_materiel' => $id_materiel, 'week' => $week));
+            $booking = new ReservationModel();
+            $booking->get(array('id_materiel' => $id_materiel, 'week' => $week));
+            $r = $booking->toArray();
             $r['id_materiel'] = $id_materiel;
             $r['_arg'] = $arg;
             $r['_week'] = $week;
