@@ -12,9 +12,8 @@ class ReservationRepository extends Repository {
     );
     
     public function get($key, $value, $options) {
-        $query = '
-            select 
-                date_format(reservations.date_heure_debut, "%w") as jour,
+        /*
+        date_format(reservations.date_heure_debut, "%w") as jour,
                 case date_format(reservations.date_heure_debut, "%w")
                     when 1 then "lundi"
                     when 2 then "mardi"
@@ -23,17 +22,24 @@ class ReservationRepository extends Repository {
                     when 5 then "vendredi"
                 end as jour_libelle,
                 unix_timestamp(reservations.date_heure_debut) as date_heure_debut,
-                time(reservations.date_heure_debut) as heure_debut,
+                time(reservations.date_heure_debut) as heure_debut
                 addtime(time(reservations.date_heure_debut), timediff(reservations.date_heure_fin, reservations.date_heure_debut)) as heure_fin,
-                reservations.id as id,
-                reservations.etat as etat_reservation,
+        */
+        $options['query'] = '
+            select 
+                reservations.id,
+                reservations.date_heure_debut,
+                reservations.date_heure_fin,
+                reservations.etat,
                 materiels.etat as etat_materiel,
                 concat(utilisateurs.civility, " ", utilisateurs.nom) as enseignant,
                 utilisateurs.id as id_enseignant
             from
                 reservations
             left join materiels on materiels.id=reservations.id_materiel
-            left join utilisateurs on utilisateurs.id=reservations.id_enseignant
+            left join utilisateurs on utilisateurs.id=reservations.id_enseignant';
+        return parent::get($key, $value, $options);
+        /*
             where
                 date_format(reservations.date_heure_debut, "%u")=' . $value['week'] . '
                 and reservations.id_materiel=' . $value['id_materiel']
