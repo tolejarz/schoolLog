@@ -1,0 +1,5 @@
+Model:
+- "get" method should not execute MySQL query but only prepare it. We should execute query when developper try to read/write a property or call a model method.
+
+Repository:
+- write an error_log when illegal option is used.

@@ -292,23 +292,31 @@ class SupportController extends Controller {
                 }
                 // On vide d'éventuels fichiers temporaires résiduels en cas d'erreur et on redirige en fonction
                 unset($_FILES);
-                if(!empty($_SESSION['ERROR_MSG'])) {
+                if (!empty($_SESSION['ERROR_MSG'])) {
                     //Création de la liste matières/prof pour sélectionner le prof à qui on uploade le support
-                    $msql = $this->dbo->query('select distinct m.id, m.nom from matieres m, enseignants_matieres_classes e where e.id_classe="'.$_GET["class"].'" and m.id=e.id_matiere order by 2');
+                    $m = new EnseignantsMatieresClassesModel();
+                    $matiere = $m->search(array('id_classe' => $_GET['class']));
+                    
                     $mat_prof = array();
-                    foreach ($msql as $m) {
-                        $matiere = array("id" => $m['id'], 'nom' => $m["nom"]);
-                        $psql = $this->dbo->query('select distinct u.id, u.nom from enseignants_matieres_classes e, utilisateurs u where e.id_classe="'.$_GET["class"].'" and e.id_matiere="'.$m['id'].'" and u.id=e.id_enseignant order by 2');
-                        foreach ($psql as $p) {
-                            $profs[] = array("id" => $p["id"], 'nom'=> $p['nom']);
+                    foreach ($matiere as $m) {
+                        $user = new UserModel();
+                        $user->get($m['id_enseignant']);
+                        
+                        if (!isset($mat_prof[$m['id_matiere']])) {
+                            $mat_prof[$m['id_matiere']] = $m;
                         }
-                        if (isset($profs)) {
-                            $matiere['profs'] = $profs;
-                            $mat_prof[] = $matiere;
-                            $profs = null;
+                        if (!isset($mat_prof[$m['id_matiere']]['profs'][$user->id])) {
+                            $mat_prof[$m['id_matiere']]['profs'][$user->id] = $user->toArray();
                         }
                     }
-                    $parms = array("class"=>$_GET["class"], "subject"=>$_GET["subject"], "nom_support"=>(isset($_POST['nom_support']) ? $_POST['nom_support'] : ''),"tags"=>(isset($_POST['tags']) ? $_POST['tags'] : ''),"mat_prof"=> (isset($_POST['mat_prof']) ? $_POST['mat_prof'] : ''),  "matieres"=>$mat_prof);
+                    $parms = array(
+                        'class'         => $_GET['class'],
+                        'subject'       => $_GET['subject'],
+                        'nom_support'   => (isset($_POST['nom_support']) ? $_POST['nom_support'] : ''),
+                        'tags'          => (isset($_POST['tags']) ? $_POST['tags'] : ''),
+                        'mat_prof'      => (isset($_POST['mat_prof']) ? $_POST['mat_prof'] : ''),
+                        'matieres'      => $mat_prof
+                    );
                     $v = new SupportAddView();
                     $v->show($parms);
                 } else {
@@ -316,19 +324,19 @@ class SupportController extends Controller {
                 }
             } else {
                 //Création de la liste matières/prof pour sélectionner le prof à qui on uploade le support
-                $msql = $this->dbo->query('select distinct m.id, m.nom from matieres m, enseignants_matieres_classes e where e.id_classe="'.$_GET["class"].'" and m.id=e.id_matiere order by 2');
+                $m = new EnseignantsMatieresClassesModel();
+                $matiere = $m->search(array('id_classe' => $_GET['class']));
+                
                 $mat_prof = array();
-                foreach ($msql as $m) {
-                    $matiere = array("id" => $m['id'], 'nom' => $m["nom"]);
-                    $psql = $this->dbo->query('select distinct u.id, u.nom from enseignants_matieres_classes e, utilisateurs u where e.id_classe="'.$_GET["class"].'" and e.id_matiere="'.$m['id'].'" and u.id=e.id_enseignant order by 2');
-                    foreach ($psql as $p) {
-                        $profs[] = array("id" => $p["id"], 'nom'=> $p['nom']);
-                    }
+                foreach ($matiere as $m) {
+                    $user = new UserModel();
+                    $user->get($m['id_enseignant']);
                     
-                    if (isset($profs)) {
-                        $matiere['profs'] = $profs;
-                        $mat_prof[] = $matiere;
-                        $profs = null;
+                    if (!isset($mat_prof[$m['id_matiere']])) {
+                        $mat_prof[$m['id_matiere']] = $m;
+                    }
+                    if (!isset($mat_prof[$m['id_matiere']]['profs'][$user->id])) {
+                        $mat_prof[$m['id_matiere']]['profs'][$user->id] = $user->toArray();
                     }
                 }
                 $parms = array(
@@ -372,10 +380,22 @@ class SupportController extends Controller {
             
             //On récupère la liste des matières par classe, afin de permettre de déplacer le support d'une classe à l'autre
             $classes = array();
-            $resc = $this->dbo->query('select distinct c.id, c.libelle from enseignants_matieres_classes e, classes c where e.id_classe=c.id and e.id_enseignant=' . $_SESSION['user']['id'] . ' order by libelle asc');
+            $resc = $this->dbo->query('
+                select distinct c.id, c.libelle from
+                enseignants_matieres_classes e, classes c
+                where e.id_classe=c.id
+                and e.id_enseignant=' . $_SESSION['user']['id'] . '
+                order by libelle asc');
             foreach ($resc as $rc) {
                 $class = array('id' => $rc['id'], 'libelle' => $rc['libelle']);
-                $resm = $this->dbo->query('select m.id, m.nom from enseignants_matieres_classes e, matieres m where e.id_classe=' . $rc['id'] . ' and e.id_matiere=m.id and e.id_enseignant=' . $_SESSION['user']['id'] . ' order by nom asc');
+                $resm = $this->dbo->query('
+                    select m.id, m.nom
+                    from enseignants_matieres_classes e, matieres m
+                    where e.id_classe=' . $rc['id'] . '
+                    and e.id_matiere=m.id
+                    and e.id_enseignant=' . $_SESSION['user']['id'] . '
+                    order by nom asc
+                ');
                 $subjects = array();
                 foreach ($resm as $rm) {
                     $subject = array('id' => $rm['id'], 'nom' => $rm['nom']);

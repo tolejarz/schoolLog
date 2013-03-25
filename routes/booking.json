@@ -12,5 +12,12 @@
         "handler":"BookingHandler.add",
         "args":[],
         "method":"get"
+    },
+    "BookingDelete":{
+        "uri":"/booking/delete/(\\d+)",
+        "reverse_uri":"/booking/delete/%d",
+        "handler":"BookingHandler.delete",
+        "args":["booking_id"],
+        "method":"get"
     }
 }
