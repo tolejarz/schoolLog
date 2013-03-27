@@ -21,5 +21,15 @@ class SupportRepository extends Repository {
         ';
         return parent::get($key, $value, $options);
     }
+    
+    public function search($filters = array(), $options = array()) {
+        $options['query'] = '
+            select supports.*, classes.libelle as nom_classe, matieres.nom as nom_matiere
+            from supports
+            left join classes on classes.id=supports.id_classe
+            left join matieres on matieres.id=supports.id_matiere
+        ';
+        return parent::search($filters, $options);
+    }
 }
 ?>

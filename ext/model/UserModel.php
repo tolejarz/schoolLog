@@ -1,6 +1,9 @@
 <?php
 class UserModel extends Model {
-    protected $_fields = array('id', 'login', 'civility', 'nom', 'email', 'droits', 'derniere_connexion', 'charte_signee');
+    protected $_fields = array(
+        'id', 'login', 'civility', 'nom', 'email', 'droits', 'derniere_connexion', 'charte_signee',
+        'user_class'
+    );
     
     public function __construct($values = array()) {
         $this->repository = new UserRepository();

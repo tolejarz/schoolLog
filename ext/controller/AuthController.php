@@ -26,7 +26,7 @@ class AuthController extends Controller {
                         'name'              => $user->nom,
                         'email'             => $user->email,
                         'lastlog'           => $user->derniere_connexion,
-                        'class'             => $r['user_class'],
+                        'class'             => $user->user_class,
                         'classes_subjects'  => $r['user_classes_subjects'],
                         'privileges'        => $user->droits,
                         'charter'           => $user->charte_signee,

@@ -14,7 +14,12 @@ class UserRepository extends Repository {
     
     public function auth($login, $password) {
         //return $this->link->fetchOne('select * from user where login=%s and sha1(concat(username, password))=%s', $login, $password);
-        return $this->link->fetchOne('select * from ' . $this->table_name . ' where login=%s', $login);
+        $r = $this->link->fetchOne('select * from ' . $this->table_name . ' where login=%s', $login);
+        if ($r['droits'] == 'eleve') {
+            $c = $this->link->fetchOne('select id_classe from eleves_classes where id_eleve=%d', $r['id']);
+            $r['user_class'] = $c['id_classe'];
+        }
+        return $r;
     }
     
     public function create($a) {
