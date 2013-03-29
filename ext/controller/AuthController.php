@@ -2,6 +2,8 @@
 // No SQL!!! :)
 class AuthController extends Controller {
     public function doLogin() {
+        
+        
         if (!empty($_SESSION['user']['id'])) {
             $this->defaultRoute();
         }
@@ -47,7 +49,7 @@ class AuthController extends Controller {
         }
         
         $v = new LoginView();
-        $v->show(array());
+        $v->show(array('site_name' => $this->configuration['site']['name']));
     }
     
     private function defaultRoute() {
@@ -78,7 +80,7 @@ class AuthController extends Controller {
             }
         }
         $v = new CharteView();
-        $v->show(array());
+        $v->show(array('site_name' => $this->configuration['site']['name']));
     }
 }
 ?>
