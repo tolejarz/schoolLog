@@ -536,7 +536,10 @@ class CalendrierController extends Controller {
                     foreach ($_POST as $k => $v) {
                         if (substr($k, 0, 5) == 'event') {
                             $tmp = explode('-', $v);
-                            $this->dbo->insert('insert into modele_planning(jour, heure_debut, heure_fin, id_matiere, id_enseignant, id_classe, id_periode) values(' . intval($tmp[0] + 1) . ', "' . $this->FormatTimeFrToUs($tmp[1]) . '", "' . $this->FormatTimeFrToUs($tmp[2]) . '", ' . intval($tmp[3]) . ', (select id_enseignant from enseignants_matieres_classes where id_matiere=' . intval($tmp[3]) . ' and id_classe=' . $this->_getArg('class_id') . ' limit 0, 1), ' . $this->_getArg('class_id') . ', ' . $period->id . ')');
+                            $this->dbo->insert('
+                                insert into modele_planning(jour, heure_debut, heure_fin, id_matiere, id_enseignant, id_classe, id_periode)
+                                values(' . intval($tmp[0] + 1) . ', "' . $this->FormatTimeFrToUs($tmp[1]) . '", "' . $this->FormatTimeFrToUs($tmp[2]) . '", ' . intval($tmp[3]) . ', (select id_enseignant from enseignants_matieres_classes where id_matiere=' . intval($tmp[3]) . ' and id_classe=' . $this->_getArg('class_id') . ' limit 0, 1), ' . $this->_getArg('class_id') . ', ' . $period->id . '
+                            )');
                         }
                     }
                 }

@@ -40,12 +40,7 @@ class Action {
         } else {
             die();
         }
-        
-        if ($query['handler'] !== 'ResourceHandler') {
-            include_once 'templates/layout/main.phtml';
-        } else {
-            echo $html;
-        }
+        include_once 'templates/layout/main.phtml';
     }
 }
 ?>

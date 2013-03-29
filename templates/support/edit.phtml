@@ -1,6 +1,6 @@
 <div class="selectionBox">
-    <form action="index.php?page=supports&amp;action=edit&amp;id=' . $parms["id"] . '" method="post">
-        <input name="nom_fichier" type="hidden" value="' . $parms['nom_fichier'] . '" />
+    <form action="" method="post">
+        <input name="nom_fichier" type="hidden" value="<?php echo $parms['nom_fichier']; ?>" />
         <p class="headerSelectionBox">Veuillez modifier les informations relatives au support.</p>
         <table class="searchContainer">
             <tr>
@@ -18,11 +18,11 @@
             </tr>
             <tr>
                 <th>Titre :</th>
-                <td><input name="titre" type="text" value="' . $parms['titre'] . '" /></td>
+                <td><input name="titre" type="text" value="<?php echo $parms['titre']; ?>" /></td>
             </tr>
             <tr>
                 <th>Mots-clés :</th>
-                <td><input name="tags" type="text" value="' . $parms['tags'] . '" /> (séparés par des ";")</td>
+                <td><input name="tags" type="text" value="<?php echo $parms['tags']; ?>" /> (séparés par des ";")</td>
             </tr>
         </table>
         <p class="submitContainer">

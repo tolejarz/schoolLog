@@ -19,7 +19,7 @@ if ($_SESSION['user']['privileges'] == 'eleve') {
 						<select name="id_matiere">
 							<option value="-1">Toutes</option>');
 	foreach ($parms['matieres'] as $m) {
-		echo('<option ' . ($m['id'] == $parms['id_matiere'] ? 'selected="selected" ' : '') . 'value="' . $m['id'] . '">' . $m['nom'] . '</option>');
+		echo('<option ' . ($m['id_matiere'] == $parms['id_matiere'] ? 'selected="selected" ' : '') . 'value="' . $m['id_matiere'] . '">' . $m['nom_matiere'] . '</option>');
 	}
 	echo('
 						</select>

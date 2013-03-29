@@ -1,4 +1,5 @@
 <?php
+// No SQL!!! :)
 class SupportController extends Controller {
     public function doList() {
         if ($_SESSION['user']['privileges'] == 'enseignant') {
@@ -28,13 +29,8 @@ class SupportController extends Controller {
             $v->show($_supports);
         } elseif ($_SESSION['user']['privileges'] == 'eleve') {
             // Récupération de la liste des matières de la classe de l'élève
-            $matieres = $this->dbo->query('
-                select distinct m.id, m.nom
-                from enseignants_matieres_classes e, matieres m
-                where e.id_classe=' . $_SESSION['user']['class'] . '
-                and m.id=e.id_matiere
-                order by nom
-            ');
+            $m = new EnseignantsMatieresClassesModel();
+            $matieres = $m->search(array('id_classe' => $_SESSION['user']['class']));
             
             $id_matiere = $this->_getArg('id_matiere');
             $titre_on = $this->_getArg('titre_on');
@@ -80,29 +76,37 @@ class SupportController extends Controller {
                 $where = !empty($whereTitreTags) ? ' and (' . $whereTitreTags . ')' : '';
                 
                 // Récupération des supports
-                $subjects = $this->dbo->query('select distinct m.id, m.nom from matieres m, supports s where s.id_classe=' . $_SESSION['user']['class'] . ' and s.id_matiere=m.id' . $whereMatiere . $where . ' order by nom asc');
-                foreach ($subjects as &$subject) {
-                    $supports = $this->dbo->query('select s.id, date_format(s.date_creation, "%d/%m/%Y %Hh%i") as date, concat(u.civility, " ",u.nom) as enseignant, s.nom_fichier, s.titre from supports s, utilisateurs u where s.id_enseignant=u.id and s.id_matiere=' . $subject['id'] . ' and s.id_classe=' . $_SESSION['user']['class'] . $where . ' order by s.date_creation asc');
-                    $subject['supports'] = $supports;
+                $support = new SupportModel();
+                foreach ($matieres as &$matiere) {
+                    $args['id_classe'] = $_SESSION['user']['class'];
+                    $args['id_matiere'] = $matiere['id_matiere'];
+                    $supports = $support->search($args);
+                    $matiere['supports'] = $supports;
                 }
                 
-                $classe = array('subjects' => $subjects);
+                $classe = array('subjects' => $matieres);
                 $classes = array($classe);
                 $v = new SupportDefaultView();
                 $v->show(array('classes' => $classes));
             }
         } elseif ($_SESSION['user']['privileges'] == 'superviseur') {
             // Récupération des différentes classes/matières auxquelles l'élève a accès afin de lui en offrir la liste
-            $class = new ClasseModel();
-            $classes = $class->search();
-            foreach ($classes as &$c) {
-                $c['matieres'] = $this->dbo->query('
-                    select distinct m.id, m.nom
-                    from enseignants_matieres_classes e, matieres m
-                    where e.id_classe=' . $c['id'] . '
-                    and m.id=e.id_matiere
-                    order by nom
-                ');
+            $m = new EnseignantsMatieresClassesModel();
+            $mc = $m->search();
+            $classes = array();
+            foreach ($mc as $c) {
+                if (!isset($classes[$c['id_classe']])) {
+                    $classes[$c['id_classe']] = array(
+                        'id'        => $c['id_classe'],
+                        'libelle'   => $c['nom_classe'],
+                    );
+                }
+                if (!isset($classes[$c['id_classe']]['matieres'][$c['id_matiere']])) {
+                    $classes[$c['id_classe']]['matieres'][$c['id_matiere']] = array(
+                        'id'        => $c['id_matiere'],
+                        'nom'       => $c['nom_matiere'],
+                    );
+                }
             }
             if (isset($_POST['id_matiere'])) {
                 $ids = explode(';', $_POST['id_matiere']);
@@ -396,43 +400,28 @@ class SupportController extends Controller {
             //On récupère la liste des matières par classe, afin de permettre de déplacer le support d'une classe à l'autre
             $m = new EnseignantsMatieresClassesModel();
             $resc = $m->search(array('id_enseignant' => $_SESSION['user']['id']));
-            
-            /*$resc = $this->dbo->query('
-                select distinct c.id, c.libelle from
-                enseignants_matieres_classes e, classes c
-                where e.id_classe=c.id
-                and e.id_enseignant=' . $_SESSION['user']['id'] . '
-                order by libelle asc');
-                */
             $classes = array();
             foreach ($resc as $rc) {
-                
-                $class = array('id' => $rc['id'], 'libelle' => $rc['libelle']);
-                $resm = $this->dbo->query('
-                    select m.id, m.nom
-                    from enseignants_matieres_classes e, matieres m
-                    where e.id_classe=' . $rc['id'] . '
-                    and e.id_matiere=m.id
-                    and e.id_enseignant=' . $_SESSION['user']['id'] . '
-                    order by nom asc
-                ');
-                $subjects = array();
-                foreach ($resm as $rm) {
-                    $subject = array('id' => $rm['id'], 'nom' => $rm['nom']);
-                    $subjects[] = $subject;
+                if (isset($classes[$rc['id_classe']])) {
+                    continue;
                 }
-                $class['subjects'] = $subjects;
-                $classes[] = $class;
+                $classes[$rc['id_classe']] = array('id' => $rc['id_classe'], 'libelle' => $rc['nom_classe']);
+                $classes[$rc['id_classe']]['subjects'] = array();
+                foreach ($resc as $subject) {
+                    if ($subject['id_classe'] == $rc['id_classe']) {
+                        $classes[$rc['id_classe']]['subjects'][$subject['id_matiere']] = array('id' => $subject['id_matiere'], 'nom' => $subject['nom_matiere']);
+                    }
+                }
             }
             $v = new SupportEditView();
             $parms = array(
                 'id'            => $support_id,
-                'tags'          => $r['tags'],
-                'titre'         => $r['titre'],
-                'nom_fichier'   => $r['nom_fichier'],
+                'tags'          => $support->tags,
+                'titre'         => $support->titre,
+                'nom_fichier'   => $support->nom_fichier,
                 'classes'       => $classes,
-                'matiere'       => $r['matiere'],
-                'classe'        => $r['classe']
+                'matiere'       => $support->id_matiere,
+                'classe'        => $support->id_classe
             );
             $v->show($parms);
         }
