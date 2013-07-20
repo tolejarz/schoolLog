@@ -1,5 +1,5 @@
-<?php
-class CalendrierRepository extends Repository {
+²<?php
+class ModelePlanningRepository extends Repository {
     protected $table_name = 'modele_planning';
     protected $fields = array(
         'id'            => array('type' => '%i', 'nullable' => false, 'primary' => true),
@@ -16,10 +16,15 @@ class CalendrierRepository extends Repository {
         $whereEnseignant = $whereEleve = $whereClasse = '';
         if (isset($filters['id_enseignant'])) {
             $whereEnseignant = ' and mp.id_enseignant=' . $filters['id_enseignant'];
-        } else if (isset($filters['id_eleve'])) {
+        }
+        if (isset($filters['id_eleve'])) {
             $whereClasse = ' and mp.id_classe=(select id_classe from eleves_classes where id_eleve=' . $filters['id_eleve'] . ')';
-        } else if (isset($filters['id_classe'])) {
+        }
+        if (isset($filters['id_classe'])) {
             $whereClasse = ' and mp.id_classe=' . $filters['id_classe'];
+        }
+        if (isset($filters['id_periode'])) {
+            $whereClasse = ' and mp.id_periode=' . $filters['id_periode'];
         }
         
         $demands = 'and o.etat="validée"';
@@ -64,60 +69,73 @@ class CalendrierRepository extends Repository {
                 and o.etat!="refusée"
                 and mp.id_classe=c.id
                 and mp.id_matiere=m.id
-                and (o.date_origine between "' . date('Y-m-d', $filters['start']) . '" and "' . date('Y-m-d', $filters['end']) . '")' . 
+                ' . (!empty($filters['start']) ? 'and (o.date_origine >= "' . date('Y-m-d', $filters['start']) . '"' : '') . '
+                ' . (!empty($filters['end']) ? 'and (o.date_origine <= "' . date('Y-m-d', $filters['end']) . '"' : '') . 
                 $whereEnseignant . 
                 $whereClasse
         );
         
-        $normal = $this->link->fetchAll('
-            select 
-                mp.id,
-                mp.jour-2 as jour,
-                mp.jour as jour_libelle,
-                mp.heure_debut,
-                mp.heure_fin,
-                m.nom as matiere,
-                m.id as id_matiere,
-                c.libelle as classe,
-                c.id as id_classe,
-                concat(u.civility, " ", u.nom) as enseignant,
-                u.id as id_enseignant
-            from 
-                matieres m, classes c, periodes p, modele_planning mp
-            left join utilisateurs u on u.id=mp.id_enseignant
-            where 
-                not exists (select o.id_modele_planning from operations o where o.id_modele_planning=mp.id ' . $demands . ' and o.etat!="refusée" and (o.date_origine between "' . date('Y-m-d', $filters['start']) . '" and "' . date('Y-m-d', $filters['end']) . '"))
-                and mp.id_periode=p.id
-                and (date_add("' . date('Y-m-d', $filters['start']) . '", INTERVAL (mp.jour - 2) DAY) between p.date_debut and p.date_fin)
-                and not exists (select id from periodes where type="vacances" and (date_add("' . date('Y-m-d', $filters['start']) . '", INTERVAL (mp.jour - 2) DAY) between date_debut and date_fin))
-                and mp.id_classe=c.id
-                and m.id=mp.id_matiere' . 
-                $whereEnseignant . 
-                $whereClasse
-        );
-        $holidays = $this->link->fetchAll('
-            select
-                id,
-                unix_timestamp(date_debut) as date_debut_timestamp,
-                unix_timestamp(date_fin) as date_fin_timestamp,
-                date_format(date_debut, "%d/%m/%Y") as date_debut_f,
-                date_format(date_fin, "%d/%m/%Y") as date_fin_f
-            from
-                periodes
-            where
-                type="vacances"
-                and (
-                    date_debut between "' . date('Y-m-d', $filters['start']) . '" and "' . date('Y-m-d', $filters['end']) . '"
-                    or
-                    date_fin between "' . date('Y-m-d', $filters['start']) . '" and "' . date('Y-m-d', $filters['end']) . '"
-                    or
-                    (date_debut <= "' . date('Y-m-d', $filters['start']) . '" and date_fin >= "' . date('Y-m-d', $filters['end']) . '")
-                )'
-        );
+        $normal = $holidays = array();
+        if (!empty($filters['start']) && !empty($filters['end'])) {
+            $normal = $this->link->fetchAll('
+                select 
+                    mp.id,
+                    mp.jour-2 as jour,
+                    mp.jour as jour_libelle,
+                    mp.heure_debut,
+                    mp.heure_fin,
+                    m.nom as matiere,
+                    m.id as id_matiere,
+                    c.libelle as classe,
+                    c.id as id_classe,
+                    concat(u.civility, " ", u.nom) as enseignant,
+                    u.id as id_enseignant
+                from 
+                    matieres m, classes c, periodes p, modele_planning mp
+                left join utilisateurs u on u.id=mp.id_enseignant
+                where 
+                    not exists (
+                        select o.id_modele_planning
+                        from operations o
+                        where o.id_modele_planning=mp.id ' . $demands . '
+                        and o.etat!="refusée"
+                        and (o.date_origine between "' . date('Y-m-d', $filters['start']) . '" and "' . date('Y-m-d', $filters['end']) . '"))
+                    and mp.id_periode=p.id
+                    and (date_add("' . date('Y-m-d', $filters['start']) . '", INTERVAL (mp.jour - 2) DAY) between p.date_debut and p.date_fin)
+                    and not exists (
+                        select id
+                        from periodes
+                        where type="vacances"
+                        and (date_add("' . date('Y-m-d', $filters['start']) . '", INTERVAL (mp.jour - 2) DAY) between date_debut and date_fin))
+                    and mp.id_classe=c.id
+                    and m.id=mp.id_matiere' . 
+                    $whereEnseignant . 
+                    $whereClasse
+            );
+            $holidays = $this->link->fetchAll('
+                select
+                    id,
+                    unix_timestamp(date_debut) as date_debut_timestamp,
+                    unix_timestamp(date_fin) as date_fin_timestamp,
+                    date_format(date_debut, "%d/%m/%Y") as date_debut_f,
+                    date_format(date_fin, "%d/%m/%Y") as date_fin_f
+                from
+                    periodes
+                where
+                    type="vacances"
+                    and (
+                        date_debut between "' . date('Y-m-d', $filters['start']) . '" and "' . date('Y-m-d', $filters['end']) . '"
+                        or
+                        date_fin between "' . date('Y-m-d', $filters['start']) . '" and "' . date('Y-m-d', $filters['end']) . '"
+                        or
+                        (date_debut <= "' . date('Y-m-d', $filters['start']) . '" and date_fin >= "' . date('Y-m-d', $filters['end']) . '")
+                    )'
+            );
+        }
         
         $days = array('dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi');
         $h = array();
-        $d = $filters['start'];
+        
         if (!empty($holidays)) {
             $d = $filters['start'];
             while (date('Ymd', $d) <= date('Ymd', $filters['end'])) {

@@ -1,5 +1,5 @@
-<?php if (!empty($parms['classes'])) : ?>
-    <?php foreach ($parms['classes'] as $class) : ?>
+<?php if (!empty($parms['supports']['classes'])) : ?>
+    <?php foreach ($parms['supports']['classes'] as $class) : ?>
         <?php if ($_SESSION['user']['privileges'] != 'eleve') : ?>
         <h2><?php echo $class['nom_classe']; ?></h2>
         <?php endif; ?>
@@ -45,7 +45,7 @@
                             
                             <td><?php echo $support['titre']; ?></td>
                             
-                            <td class="centeredThin"><a class="downloadLink" href="<?php echo UPLOAD_PATH . $support['nom_fichier']; ?>" target="_blank">Télécharger</a></td>
+                            <td class="centeredThin"><a class="downloadLink" href="<?php echo $parms['upload_path'] . $support['nom_fichier']; ?>" target="_blank">Télécharger</a></td>
                         </tr>
                     <?php endforeach; ?>
                     </table>

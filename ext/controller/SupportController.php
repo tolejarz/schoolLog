@@ -26,7 +26,7 @@ class SupportController extends Controller {
                 }
             }
             $v = new SupportDefaultView();
-            $v->show($_supports);
+            $v->show(array('supports' => $_supports, 'upload_path' => $this->configuration['path']['upload']));
         } elseif ($_SESSION['user']['privileges'] == 'eleve') {
             // Récupération de la liste des matières de la classe de l'élève
             $m = new EnseignantsMatieresClassesModel();
@@ -87,7 +87,7 @@ class SupportController extends Controller {
                 $classe = array('subjects' => $matieres);
                 $classes = array($classe);
                 $v = new SupportDefaultView();
-                $v->show(array('classes' => $classes));
+                $v->show(array('supports' => array('classes' => $classes), 'upload_path' => $this->configuration['path']['upload']));
             }
         } elseif ($_SESSION['user']['privileges'] == 'superviseur') {
             // Récupération des différentes classes/matières auxquelles l'élève a accès afin de lui en offrir la liste
@@ -151,7 +151,7 @@ class SupportController extends Controller {
                     $classes[] = $class;
                 }
                 $v = new SupportDefaultView();
-                $v->show(array('classes' => $classes));
+                $v->show(array('supports' => array('classes' => $classes), 'upload_path' => $this->configuration['path']['upload']));
             }
         }
     }
@@ -212,7 +212,7 @@ class SupportController extends Controller {
                             // Envoi du fichier
                             $f = new FileManipulation();
                             // print($_POST['nom_support']);
-                            $filename = $f->send($_POST['nom_support'], 'nom_du_fichier', UPLOAD_PATH);
+                            $filename = $f->send($_POST['nom_support'], 'nom_du_fichier', $this->configuration['path']['upload']);
                             
                             // Préparation de l'insertion à la base : création du tableau contenant les données nécessaires, puis création de l'objet nécessaire à l'insertion
                             $support = new SupportModel(array(
@@ -290,7 +290,7 @@ class SupportController extends Controller {
                         if (isset($_GET['class'])) {
                             // Envoi du fichier
                             $f = new FileManipulation();
-                            $filename = $f->send($_POST['nom_support'], 'nom_du_fichier', UPLOAD_PATH);
+                            $filename = $f->send($_POST['nom_support'], 'nom_du_fichier', $this->configuration['path']['upload']);
                             
                             $mp = explode(";", $_POST['mat_prof']);
                             // Préparation de l'insertion à la base : création du tableau contenant les données nécessaires, puis création de l'objet nécessaire à l'insertion
@@ -385,7 +385,7 @@ class SupportController extends Controller {
                     
                     //On formate le nom de fichier en fonction de nos désirs, puis on le renomme et on met à jour la base
                     $new_nom_fichier = $f->format($_POST['titre'], $_POST['nom_fichier']);
-                    rename(UPLOAD_PATH . $_POST['nom_fichier'], UPLOAD_PATH . $new_nom_fichier);
+                    rename($this->configuration['path']['upload'] . $_POST['nom_fichier'], $this->configuration['path']['upload'] . $new_nom_fichier);
                     $support->titre             = $_POST['titre'];
                     $support->tags              = $_POST['tags'];
                     $support->nom_fichier       = $new_nom_fichier;

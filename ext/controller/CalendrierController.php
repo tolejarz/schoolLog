@@ -10,10 +10,10 @@ class CalendrierController extends Controller {
         
         $r = array();
         if ($_SESSION['user']['privileges'] == 'eleve') {
-            $m = new CalendrierModel();
+            $m = new ModelePlanningModel();
             $r['jours'] = $m->search(array('id_eleve' => $_SESSION['user']['id'], 'start' => $start, 'end' => $end,  'viewer_type' => $_SESSION['user']['privileges']));
         } else if ($_SESSION['user']['privileges'] == 'enseignant') {
-            $m = new CalendrierModel();
+            $m = new ModelePlanningModel();
             $r['jours'] = $m->search(array('id_enseignant' => $_SESSION['user']['id'], 'start' => $start, 'end' => $end, 'viewer_type' => $_SESSION['user']['privileges']));
             $r['_displayClasses'] = true;
             $r['_blockDnD'] = true;
@@ -49,7 +49,7 @@ class CalendrierController extends Controller {
                 $end = $dates[4];
                 
                 $r = array();
-                $m = new CalendrierModel();
+                $m = new ModelePlanningModel();
                 $r['jours'] = $m->search(array('id_classe' => $id_classe, 'start' => $start, 'end' => $end, 'viewer_type' => $_SESSION['user']['privileges']));
                 $r['_arg'] = '&amp;action=' . $this->_getArg('action') . '&amp;id_classe=' . $this->_getArg('id_classe');
                 $r['_week'] = $week;
@@ -81,7 +81,7 @@ class CalendrierController extends Controller {
             $v->show(array('enseignants' => $enseignants, 'id_enseignant' => $id_enseignant));
             
             if (!empty($id_enseignant)) {
-                $m = new CalendrierModel();
+                $m = new ModelePlanningModel();
                 $r['jours'] = $m->search(array('id_enseignant' => $id_enseignant, 'start' => $start, 'end' => $end, 'viewer_type' => $_SESSION['user']['privileges']));
                 $r['_arg'] = '&amp;action=' . $this->_getArg('action') . '&amp;id_enseignant=' . $this->_getArg('id_enseignant');
                 $r['_week'] = $week;
@@ -123,7 +123,7 @@ class CalendrierController extends Controller {
                 } else if (($_POST['hasDateReport'] == 'yes') && (date('w', $date_report_timestamp) % 6 == 0)) {
                     $_SESSION['ERROR_MSG'] = 'Veuillez choisir un jour différent de samedi ou dimanche pour la date de report';
                 } else {
-                    $m = new CalendrierModel();
+                    $m = new ModelePlanningModel();
                     
                     /* recherche du cours ayant lieu à $date_rigine $heure_origine */
                     $parms = array(
@@ -257,7 +257,7 @@ class CalendrierController extends Controller {
             if (($_SESSION['user']['privileges'] == 'enseignant') && empty($id_matiere)) {
                 $r['result'] = 'not-created';
             } else {
-                $m = new CalendrierModel();
+                $m = new ModelePlanningModel();
                 // cas mise à jour de la demande existante
                 if (count($first_token) == 2) {
                     $r = $m->updateOperation($first_token[1], $parms);
@@ -394,7 +394,7 @@ class CalendrierController extends Controller {
                         $params['date_report'] = $this->FormatDateTimeFrToUs($_POST['date_report'] . ' ' . sprintf('%02d', $_POST['heure_report_h']) . ':' . sprintf('%02d', $_POST['heure_report_m']));
                     }
                     if ($m->updateOperation($request_id, $params) > 0) {
-                        $operation = new CalendrierModel();
+                        $operation = new ModelePlanningModel();
                         $operation->get($request_id);
                         
                         $v = new DemandeEmailView();
@@ -603,7 +603,23 @@ class CalendrierController extends Controller {
         $class = new ClasseModel();
         $r['classes'] = $class->search();
         
-        $r['cours'] = $this->dbo->query('select id, jour+0 as jour, jour as jour_libelle, date_format(heure_debut, "%H:%i") as heure_debut, date_format(heure_fin, "%H:%i") as heure_fin, id_matiere, id_periode from modele_planning where id_classe=' . $period->id_classe . ' and id_periode=' . $period_id);
+        $r['cours'] = $this->dbo->query('
+            select
+                id,
+                jour+0 as jour,
+                jour as jour_libelle,
+                date_format(heure_debut, "%H:%i") as heure_debut,
+                date_format(heure_fin, "%H:%i") as heure_fin,
+                id_matiere,
+                id_periode
+            from modele_planning
+            where id_classe=' . $period->id_classe . ' and id_periode=' . $period_id
+        );
+        
+        $m = new ModelePlanningModel();
+        $r['cours'] = $m->search(array('id_classe' => $period->id_classe, 'id_periode' => $period_id));
+        
+        error_log(var_export($r['cours'], true));
         
         $m = new EnseignantsMatieresClassesModel();
         $r['matieres'] = $m->search(array('id_classe' => $period->id_classe));
